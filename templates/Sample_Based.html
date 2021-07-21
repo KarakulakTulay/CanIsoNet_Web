@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+
+    <meta charset="UTF-8">
+    <title>Cancer Isoforms Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+
+</head>
+
+</html>
+
+<body>
+    {% extends "template.html" %} {% block content %}
+    <div class="container">
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar mr-1"></i> Expression Count of cMDT
+                    </div>
+                    <div class="card-body">
+                        <div class="chart3" id="bargraph"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class= "col-xl-12">
+            <div class="card mb-4"
+              <div id="TranscriptBrowserComponent"></div>
+            </div>
+          </div>
+        </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+    <script src="{{ url_for('static', filename='js/gene_based.js') }}"></script>
+    <script type='module' src="{{ url_for('static', filename='build/index.es.js') }}"></script>
+    <script type='module' src="{{ url_for('static', filename='build/js/transcript-browser.bundle.min.js') }}"></script>
+  <!--  <script type='module' src="{{ url_for('static', filename='build/gtexViz.es.js') }}"></script> -->
+    <script type='module' src="/Users/tulaykarakulak/Downloads/node_modules/gtex-d3/build/gtexViz.es.js"></script>
+    <script type='module' src="/Users/tulaykarakulak/Downloads/node_modules/gtex-d3/build/js/transcript-browser.bundle.min.js"></script>
+    <script type='module' src="/Users/tulaykarakulak/Downloads/node_modules/react-gtex-viz/dist/index.es.js"></script>
+    <script type="text/javascript">
+        var plot = {
+            {
+                graphJSON | safe
+            }
+        };
+        Plotly.plot('bargraph', plot, {});
+    </script>
+    <script type="module">
+    import React, { Component } from 'react'
+
+    import TranscriptBrowserComponent from 'react-gtex-viz'
+
+    class Example extends Component {
+      render () {
+        return (
+          <TranscriptBrowserComponent rootId='transcriptBrowser' type='isoformTransposed' geneId='ENSG00000130164' />
+        )
+      }
+    }
+    </script>
+
+    {% endblock %}
+</body>

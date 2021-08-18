@@ -4,19 +4,14 @@
 <head>
 
     <meta charset="utf-8">
-    <title>IsoNet v1.0</title>
+    <title> CanIsoNet v1.0 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
-  <!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>  -->
-  <!--  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
-
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-
 
 </head>
 </html>
@@ -26,19 +21,16 @@
     <div class="container">
       <br>
       <div class="jumbotron">
-      <!--  <div class="row"> -->
             <div class="col-xl-12">
                 <div class="content">
-                  <br>
-                  <br>
                   <div align="center" width="700px">
                   <h2 class= "featurette-heading">
                      CanIsoNet: <span class = "text-muted"> Cancer-specific Isoform Interaction Network </span>
-                     <h6> CanIsoNet serve as a gateway to understand the functional role of cancer-specific isoform switching event. We provide two main functionalities to the users:
-                       Browsing various statistics on cancer-specific isoform switching events in each 1209 cancer samples from the Pan-Cancer Analysis of Whole Genomes (PCAWG) project
-                       Exploring and visualising isoform-specific  network disruptions in the STRING interaction network. </h6>
+                     <h6> CanIsoNet serves as a gateway to understand the functional role of cancer-specific isoform switching events. We provide two main functionalities for the users:
+                     <br>
+                       1. Browsing various statistics on cancer-specific isoform switching events in each of the 1209 cancer samples from the Pan-Cancer Analysis of Whole Genomes (PCAWG) project
                       <br>
-                      <br>
+                       2. Exploring and visualising isoform-specific network disruptions in the STRING interaction network. </h6>
                     </div>
                 </div>
             </div>
@@ -59,10 +51,13 @@
                   <a class="nav-link" id="v-pills-sample-tab" data-toggle="pill" href="#v-pills-sample" role="tab" aria-controls="v-pills-sample" aria-selected="false">Sample Sizes</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" id="v-pills-exp-tab" data-toggle="pill" href="#v-pills-exp" role="tab" aria-controls="v-pills-exp" aria-selected="false">How To Use?</a>
+                  <a class="nav-link" id="v-pills-exp-tab" data-toggle="pill" href="#v-pills-exp" role="tab" aria-controls="v-pills-exp" aria-selected="false">Documentation</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" id="v-pills-faq-tab" data-toggle="pill" href="#v-pills-faq" role="tab" aria-controls="v-pills-faq" aria-selected="false">Frequenty Asked Questions</a>
+                  <a class="nav-link" id="v-pills-faq-tab" data-toggle="pill" href="#v-pills-faq" role="tab" aria-controls="v-pills-faq" aria-selected="false">Frequently Asked Questions</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="v-pills-acknow-tab" data-toggle="pill" href="#v-pills-acknow" role="tab" aria-controls="v-pills-acknow" aria-selected="false">About</a>
                 </li>
               </ul>
             <!-- </div> -->
@@ -71,13 +66,14 @@
               <div class="tab-content" id="v-pills-tabContent">
                       <div class="tab-pane fade active show" id="v-pills-mdt" role="tabpanel" aria-labelledby="v-pills-mdt-tab">
                         <p> Under normal conditions, cells of almost all tissue types express the same predominant canonical transcript isoform at each gene locus (MDT). In cancer, however, splicing regulation is often disturbed, leading to a switch from
-                            the most dominant transcripts (MDT) to a cancer-specific MDT (cMDT). To understand the extent of these switches, we have recenty analyzed isoform-specific protein–protein interaction disruptions in 1,209 cancer samples covering 27 different cancer
-                            types from the Pan-Cancer Analysis of Whole Genomes (PCAWG) project of the International Cancer Genomics Consortium (ICGC). Our study revealed large variations in the number of cMDT. Some cMDT were found ın 100% of all samples in a cancer type,
-                            making them ideal candidates for diagnostic biomarkers.
+                            the most dominant transcripts (MDT) to a cancer-specific MDT (cMDT) (see Figure below). <br>
+                            To understand to which extent of these switches occur, we have recenty analyzed isoform-specific protein–protein interaction disruptions in 1,209 cancer samples covering 27 different cancer
+                            types from the Pan-Cancer Analysis of Whole Genomes (PCAWG) project of the International Cancer Genomics Consortium (ICGC). <br>
+                             Our study revealed large variations in the number of cMDT. Some cMDT were found in 100% of all samples in a cancer type, making them ideal candidates for diagnostic biomarkers.
                             <figure>
-                                <img src="{{ url_for('static', filename='images/isonet.png')}}" class="figure-img img-fluid rounded" style="max-width: 70%">
-                                <figcaption class="figure-caption text-right">
-                                    <b>Figure.</b> Representation of Isoform Switching Event: Most Dominant Transcript (MDT) is identified as red transcript in normal samples while it is switched to dark gray one in cancer samples.
+                                <img src="{{ url_for('static', filename='images/mdtswitch.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                                <figcaption class="figure-caption text-left">
+                                    <b>Figure.</b> Representation of an Isoform Switching Event: Most Dominant Transcript (MDT) is represented as red transcript in normal samples while it is switched to dark gray one in cancer samples.
                                 </figcaption>
                             </figure>
                           </p>
@@ -86,7 +82,8 @@
                         <p> The methodology behind CanIsoNet is as following:
                               <figure>
                                   <img src="{{ url_for('static', filename='images/whatiscanisonet.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
-                                  <figcaption class="figure-caption text-right"> Overview of methodology to assess the impact of cancer-specific Most Dominant Transcripts (cMDT) using an isoform-specific interaction network. The top shows the steps and filters for cMDT detection. The bottom describes the methods and databases of the isoform-specific interaction network CanIsoNet. The central section depicts the combination of cMDT information with data from CanIsoNet to assess the functional impact of alternatively spliced isoforms.
+                                  <figcaption class="figure-caption text-leftt">
+                                    <b>Figure.</b> Overview of methodology to assess the impact of cancer-specific Most Dominant Transcripts (cMDT) using an isoform-specific interaction network. The top shows the steps and filters for cMDT detection. The bottom describes the methods and databases of the isoform-specific interaction network CanIsoNet. The central section depicts the combination of cMDT information with data from CanIsoNet to assess the functional impact of alternatively spliced isoforms.
                                   </figcaption>
                               </figure>
                         </p>
@@ -104,6 +101,98 @@
                               </figure> -->
                         </p>
                       </div>
+
+                      <div class="tab-pane fade" id="v-pills-exp" role="tabpanel" aria-labelledby="v-pills-exp-tab">
+                        <p> <b><u> Starting Points at Home Page:</u></b><br>
+                          <br>
+                          CanIsoNet offers two starting points to the user: <br>
+                          <br>
+                          <b>1)	Browse Cancer Type:</b> The user can find 24 cancer types to browse. In the table, the first column represents a PCAWG-Code used in the Pan-Cancer Analysis Whole Genome Project and the second column corresponds to the name of the cancer type. The third column indicates the data source (project). For now, the data presented in CanIsoNet is based on the PCAWG project. <br>
+                          <br>
+                          <b>2)	Browse a Genes & Isoforms:</b>  The user can search for a specific gene name or ENST id, or corresponding transcript name. Isoforms/Transcripts presented here are the ones found as cancer-specific MDTs across different cancer types. If your gene or protein of interest is not in the list, it means it is not found as a cMDT in our analysis. This page leads the user to the Transcript Based Page.<br>
+                          <br>
+                          <br>
+                          <b><u>Example Use Case: Browse Cancer Type</u></b>
+                          Click on any of the column to be directed into the cancer-based page.
+                          <figure>
+                              <img src="{{ url_for('static', filename='images/help2.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                          </figure>
+                          <b>Cancer Based Page</b><br>
+                          <br>
+                          Browsing by cancer type directs users to a cancer-based page. This page presents three main findings:
+                          <br>
+                          <b>a.</b>	On the top-left figure <b>(C-left)</b>, you will see frequencies of the top ten most common cMDTs, which represents the proportion of the transcripts occurence across cancer samples. Some cMDTs are found in every sample, which makes them potential biomarkers for that cancer type.  <br>
+                          <br>
+                          <b>b.</b>	On the top-right figure <b>(C-right)</b>: you will find the distribution of cMDT counts across samples of the cancer type selected which is also presented as a table on the bottom table of the page.<br>
+                          <br>
+                          <b>c.</b>	In the table below the figures, the user can find all different isoforms found as cMDTs in the cancer type of interest. The user can search for a specific isoform or sample. <br>
+                          <br>
+                          <figure>
+                              <img src="{{ url_for('static', filename='images/help3.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                          </figure>
+                          <br>
+                          <b>Transcript Based Page</b><br>
+                          <br>
+                          The transcript based page contains the following information:
+                          <br>
+                          <b>a.</b>	STRING-based transcript interaction network <b>(F)</b>:<br>
+                          -	Only ten interactions of the protein of interest are shown in the network. <br>
+                          -	Only interactions with a minimumSTRING interaction score of 900 are shown here. <br>
+                          -	The missing interactions upon isoform switching are shown as a thick black lines. The remaining interactions are seen as a thin grey lines. <br>
+                          -	Proteins found in the cancer gene census are highlighted in turquoise colours. <br>
+                          <br>
+                          <b>b.</b>	Statistics on the cMDT <b>(G & H)</b>: Number of missed and remaining interactions, network density score ( which estimates the density of interactions of a protein and its local neighborhood in the STRING interaction network), and cancer types where the transcript is found as cMDT. <br>
+                          <br>
+                          <b>c.</b>	Table <b>(I)</b> includes the sample-based information for the interactions lost upon isoform switching: which interactions are lost in which sample. <br>
+                          <br>
+                          <b>d.</b>	Table <b>(J)</b> includes the cancer gene census genes, included if an interaction with the protein of interest is lost upon isoform switching. <br>
+                          <br>
+                          <figure>
+                              <img src="{{ url_for('static', filename='images/help4.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                          </figure>
+                          <br>
+                          <b>Sample Based Page</b><br>
+                          <br>
+                          In sample based page, the user can see the MDT-cMDT switch in the corresponding sample. Here, we also show the TPM counts for the MDTs and cMDTs in cancer sample along with the average TPM counts of MDTs and cMDTs in normal samples <b>(K)</b>.
+                          <br>
+                          <br>
+                            <figure>
+                              <img src="{{ url_for('static', filename='images/help5.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                          </figure>
+                        </p>
+                      </div>
+                      <div class="tab-pane fade" id="v-pills-acknow" role="tabpanel" aria-labelledby="v-pills-acknow-tab">
+                        <p>
+                        <br>
+                        <ul>
+                            <li>
+                             CanIsoNet has been developed by <a href="https://clinicalcompbio.org" target="_blank">Clinical Computational Biology Group</a> of University of Zurich and University Hospital Zurich.
+                            </li>
+                            <br>
+                            <li>
+                             Maintainer: Tülay Karakulak
+                            </li>
+                            <br>
+                            <li>
+                            Source code can be found at <a href="https://github.com/KarakulakTulay/CanIsoNet_Web" target="_blank">Github</a>
+                            </li>
+                            <br>
+                            <li>
+                             CanIsoNet was developed with the fund provided by the Krebsliga Zürich.
+                            </li>
+                            <br>
+                            <li>
+                            CanIsoNet was built by using <a href="https://flask.palletsprojects.com/en/2.0.x/" target="_blank">Flask</a>, <a href="https://plotly.com" target="_blank">Plotly</a>, and <a href="https://getbootstrap.com" target="_blank">Bootstrap.</a>
+                            </li>
+                            <br>
+                            <li>
+                            Data used to built CanIsoNet were collected from <a href="http://version10.string-db.org" target="_blank">STRING</a>, <a href="https://3did.irbbarcelona.org" target="_blank">3did</a>, <a href="https://cancer.sanger.ac.uk/cosmic" target="_blank">COSMIC</a>, <a href="http://feb2014.archive.ensembl.org/index.html" target="_blank">Ensembl</a> and <a href="http://www.wwpdb.org/" target="_blank">Protein Data Bank.</a>
+                            </li>
+                        </ul>
+                        </p>
+                        <br>
+                        <br>
+                      </div>
                     </div>
                   </div>
           </div>
@@ -116,15 +205,11 @@
                       <a href="https://doi.org/10.1038/s41598-020-71221-5" target="_blank">Pathogenic impact of transcript isoform switching in 1,209 cancer samples covering 27 cancer types using an isoform-specific interaction network</a>
                       Scientific Reports, 2020.
                   </h6>
-                  <h6>Tülay Karakulak, Damian Szklarczyk, Christian von Mering, Abdullah Kahraman
-                      <a href="https://doi.org/10.1038/s41598-020-71221-5" target="_blank">CanIsoNet v1.0: Database to dissect the functional impact of Isoform Switching Events in Cancer</a>
-                      BioRxiv, 2021.
-                  </h6>
                   <hr class="my-4">
                   <h6>   If you have any inquires about CanIsoNet v1.0:</h6>
-                  <p>Please check <a href="http://127.0.0.1:5000/help" target="_blank">Help</a> page or contact via tuelay.karakulak@usz.ch.</p>
+                  <p>Please contact via tuelay.karakulak@usz.ch.</p>
                   <hr class="my-4">
-                  <h6>   Follow us :</h6>
+                  <h6>   Follow us:</h6>
                   <p><a href="https://clinicalcompbio.org" target="_blank">Group Page</a></p>
               </div>
         </div>
@@ -137,7 +222,7 @@
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script type="text/javascript">
             var plot = {{ graphJSON | safe }};
-            Plotly.plot('chart', plot, {});
+            Plotly.plot('chart', plot, {}, {responsive: true});
         </script>
         {% endblock %}
 

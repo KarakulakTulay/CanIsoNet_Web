@@ -11,6 +11,6 @@ $.ajax({
     },
     dataType: "json",
     success: function(data) {
-        Plotly.newPlot('bargraph', data);
+        Plotly.newPlot('bargraph', data, {responsive: true});
     }
 });

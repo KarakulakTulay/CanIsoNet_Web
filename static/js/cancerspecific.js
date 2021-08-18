@@ -9,6 +9,6 @@ $.ajax({
     },
     dataType: "json",
     success: function(data) {
-        Plotly.newPlot('sample_graph', data);
+        Plotly.newPlot('sample_graph', data, {responsive: true});
     }
 });

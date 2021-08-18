@@ -2,16 +2,17 @@
 <html>
 
 <head lang="en">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
-
-    <meta charset="UTF-8">
-    <title>Cancer Isoforms Dashboard</title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+    <title> CanIsoNet v1.0 </title>
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
 
 </head>
 
@@ -20,59 +21,102 @@
 <body>
     {% extends "template.html" %} {% block content %}
     <div class="container">
-
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <i class="fas fa-chart-bar mr-1"></i> Expression Count of cMDT
-                    </div>
-                    <div class="card-body">
-                        <div class="chart3" id="bargraph"></div>
-
+    <br>
+        <div class="jumbotron">
+          <!--  <div class="row"> -->
+                <div class="col-xl-12">
+                    <div class="content">
+                      <div align="center" width="700px">
+                      <h5 class= "featurette-heading">Gene Name: <span id="genename"></span>
+                        <br>
+                        Cancer Type: <span id="tissue"></span>
+                        <br>
+                        Sample ID: <span id="CancerSampleId"></span></h5>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-          <div class= "col-xl-12">
-            <div class="card mb-4"
-              <div id="TranscriptBrowserComponent"></div>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar mr-1"></i> Expression Count of MDT and cMDT
+                        </div>
+                        <div class="card-body">
+                            <div class="chart3" id="bargraph"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar mr-1"></i> Domain Structures of Transcripts
+                        </div>
+                        <div class="card-body">
+                            <h6><b>Normal Most Dominant Transcript (MDT):</b></h6><a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ normal_trans_id }}">{{ normal_trans_id }}</a>
+                             <!-- <span id="normal_trans_id"></span> -->
+                            <br>
+                            <img class="normal_trans_id mx-auto d-block" id ="normal_trans_id" src="xx.png" class="mx-auto d-block">
+                            <br>
+                            <br>
+                            <h6><b>Cancer Specific MDT (cMDT):</b></h6><a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ cancer_trans_id }}">{{ cancer_trans_id }}</a>
+                            <br>
+                            <br>
+                            <img class="cancer_trans_id mx-auto d-block" id ="cancer_trans_id" src="xx.png" class="mx-auto d-block">
+                        <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+    <script>
+        url = new URL(window.location.href)
+        CanSampleId = url.searchParams.get("sampleid")
+        genename = url.searchParams.get("gene")
+        tissuetype = url.searchParams.get("tissue")
+
+        document.getElementById('genename').innerHTML = genename;
+        document.getElementById('tissue').innerHTML = tissuetype;
+        document.getElementById('CancerSampleId').innerHTML = CanSampleId;
+         // document.getElementById('normal_trans_id').innerHTML = normal_trans_id;
+         // document.getElementById('cancer_trans_id').innerHTML = cancer_trans_id;
+
+    </script>
+    <script>
+        window.onload = function() {
+            normal_trans_id = '{{ normal_trans_id }}'
+            cancer_trans_id = '{{ cancer_trans_id }}'
+
+            document.getElementById('normal_trans_id').innerHTML = normal_trans_id;
+            document.getElementById('cancer_trans_id').innerHTML = cancer_trans_id;
+
+            var image = document.getElementsByClassName("cancer_trans_id")[0]
+            image.src = "static/images/" + cancer_trans_id.toUpperCase() + ".png"
+
+            var image_normal = document.getElementsByClassName("normal_trans_id")[0]
+            image_normal.src = "static/images/" + normal_trans_id.toUpperCase() + ".png"
+
+            document.getElementById('image').innerHTML = image.src
+            document.getElementById('image_normal').innerHTML = image_normal.src
+        };
+    </script>
     <script src="{{ url_for('static', filename='js/gene_based.js') }}"></script>
-    <script type='module' src="{{ url_for('static', filename='build/index.es.js') }}"></script>
-    <script type='module' src="{{ url_for('static', filename='build/js/transcript-browser.bundle.min.js') }}"></script>
-  <!--  <script type='module' src="{{ url_for('static', filename='build/gtexViz.es.js') }}"></script> -->
-    <script type='module' src="/Users/tulaykarakulak/Downloads/node_modules/gtex-d3/build/gtexViz.es.js"></script>
-    <script type='module' src="/Users/tulaykarakulak/Downloads/node_modules/gtex-d3/build/js/transcript-browser.bundle.min.js"></script>
-    <script type='module' src="/Users/tulaykarakulak/Downloads/node_modules/react-gtex-viz/dist/index.es.js"></script>
     <script type="text/javascript">
         var plot = {
             {
                 graphJSON | safe
+
             }
         };
         Plotly.plot('bargraph', plot, {});
     </script>
-    <script type="module">
-    import React, { Component } from 'react'
-
-    import TranscriptBrowserComponent from 'react-gtex-viz'
-
-    class Example extends Component {
-      render () {
-        return (
-          <TranscriptBrowserComponent rootId='transcriptBrowser' type='isoformTransposed' geneId='ENSG00000130164' />
-        )
-      }
-    }
-    </script>
-
     {% endblock %}
 </body>

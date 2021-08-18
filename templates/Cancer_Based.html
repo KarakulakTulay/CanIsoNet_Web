@@ -4,7 +4,7 @@
 <head lang="en">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
-    <title>Cancer Isoforms Dashboard</title>
+    <title> CanIsoNet v1.0 </title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
@@ -19,11 +19,22 @@
     {% extends "template.html" %} {% block content %}
 
     <div class="container">
+    <br>
+      <div class="jumbotron">
+      <!--  <div class="row"> -->
+            <div class="col-xl-12">
+                <div class="content">
+                  <div align="center" width="700px">
+                  <h4 class= "featurette-heading">Cancer Type: <span id="SampleCancerType"></span></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-chart-bar mr-1"></i> Distribition of Transcripts across Cancer
+                        <i class="fas fa-chart-bar mr-1"></i> Top 10 Transcripts and cMDT Counts Distribution across Samples
 
                     </div>
                     <div class="card-body">
@@ -38,7 +49,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Isoform Switch Event in Cancer Samples
+                        <i class="fas fa-table mr-1"></i> Transcripts found as cMDT in Cancer
                     </div>
                     <div class="table-responsive">
                         <table id="dataTable" class="table table-bordered table-striped" width="100%" data-toggle="table" cellspacing="0" data-height="500" data-search="true" data-show-export="true" data-page-size="10" data-total-rows="50">
@@ -54,10 +65,10 @@
                             {% for value in data %}
                             <tr>
                               <td><a href="Cancer_Based?cancer={{ value['Tissue']}}">{{ value['CancerType2']}}</a></td>
-                              <td><a href="Sample_Based?tissue={{ value['Tissue']}}&&gene={{ value['GeneName1']}}&sampleid={{ value['CancerSampleId']}}">{{ value['CancerSampleId']}}</a></td>
-                              <td><a href="Gene_Based?gene={{ value['GeneName1'] }}">{{ value['GeneName1'] }}</a></td>
-                              <td><a href="Gene_Based?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
-                              <td><a href="Gene_Based?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['Transcript_Name'] }}</a></td>
+                              <td><a href="Sample_Based?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['CancerSampleId']}}">{{ value['CancerSampleId']}}</a></td>
+                              <td><a href="GeneBased?gene={{ value['GeneName1'] }}">{{ value['GeneName1'] }}</a></td>
+                              <td><a href="Transcript_Based?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
+                              <td><a href="Transcript_Based?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['Transcript_Name'] }}</a></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -71,7 +82,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Number of MDTs and Mutation Counts across Samples
+                        <i class="fas fa-table mr-1"></i> Number of detected cMDTs in each sample
                     </div>
                     <div class="table-responsive">
                         <table id="dataTable" class="table table-bordered table-striped" width="100%" data-toggle="table" cellspacing="0" data-height="500" data-search="true" data-show-export="true" data-page-size="10" data-total-rows="50">
@@ -87,7 +98,8 @@
                             {% for value in data2 %}
                             <tr>
                                 <td><a href="Cancer_Based?cancer={{ value['CancerType']}}">{{ value['CancerType2']}}</a></td>
-                                <td><a href="Sample_Based?tissue={{ value['CancerType']}}&sampleid={{ value['SampleID']}}">{{ value['SampleID']}}</a></td>
+                              <!--  <td><a href="Sample_Based?tissue={{ value['CancerType']}}&sampleid={{ value['SampleID']}}">{{ value['SampleID']}}</a></td> -->
+                                <td> {{ value['SampleID'] }} </td>
                                 <td> {{ value['NumberOfMDTs'] }} </td>
                               <!--  <td> {{ value['NumberOfMutations'] }} </td> -->
                             </tr>
@@ -109,14 +121,12 @@
                 graphJSON | safe
             }
         };
-        Plotly.plot('sample_graph', plot, {});
+        Plotly.plot('sample_graph', plot, {}, {responsive: true});
+    </script>
+    <script>
+        SampleCancerType = '{{ SampleCancerType }}';
+        document.getElementById('SampleCancerType').innerHTML = SampleCancerType;
     </script>
     {% endblock %}
 
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script> -->
-    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
-    <!-- <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script> -->
-    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script> -->
-    <!-- <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script> -->
-    <!-- <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script> -->
 </body>

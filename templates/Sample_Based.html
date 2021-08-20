@@ -57,16 +57,15 @@
                             <i class="fas fa-chart-bar mr-1"></i> Domain Structures of Transcripts
                         </div>
                         <div class="card-body">
-                            <h6><b>Normal Most Dominant Transcript (MDT):</b></h6><a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ normal_trans_id }}">{{ normal_trans_id }}</a>
                              <!-- <span id="normal_trans_id"></span> -->
                             <br>
-                            <img class="normal_trans_id mx-auto d-block" id ="normal_trans_id" src="xx.png" class="mx-auto d-block">
-                            <br>
-                            <br>
+                            <h6><b>Normal Most Dominant Transcript (MDT):</b></h6><a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ normal_trans_id }}">{{ normal_trans_id }}</a>
                             <h6><b>Cancer Specific MDT (cMDT):</b></h6><a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ cancer_trans_id }}">{{ cancer_trans_id }}</a>
                             <br>
                             <br>
-                            <img class="cancer_trans_id mx-auto d-block" id ="cancer_trans_id" src="xx.png" class="mx-auto d-block">
+                            <h6>Domain Structure of Transcripts</h6>
+                            <br>
+                            <img class="cancer_trans_id mx-auto d-block" id ="cancer_trans_id" src="xx.png" class="mx-auto d-block" width="600" height="450">
                         <br>
                         </div>
                     </div>
@@ -86,8 +85,6 @@
         document.getElementById('genename').innerHTML = genename;
         document.getElementById('tissue').innerHTML = tissuetype;
         document.getElementById('CancerSampleId').innerHTML = CanSampleId;
-         // document.getElementById('normal_trans_id').innerHTML = normal_trans_id;
-         // document.getElementById('cancer_trans_id').innerHTML = cancer_trans_id;
 
     </script>
     <script>
@@ -95,17 +92,26 @@
             normal_trans_id = '{{ normal_trans_id }}'
             cancer_trans_id = '{{ cancer_trans_id }}'
 
-            document.getElementById('normal_trans_id').innerHTML = normal_trans_id;
+            url = new URL(window.location.href)
+            CanSampleId = url.searchParams.get("sampleid")
+            genename = url.searchParams.get("gene")
+            tissuetype = url.searchParams.get("tissue")
+
+            //document.getElementById('normal_trans_id').innerHTML = normal_trans_id;
             document.getElementById('cancer_trans_id').innerHTML = cancer_trans_id;
 
+            //var image = document.getElementsByClassName("cancer_trans_id")[0]
+            // image.src = "static/images/" + cancer_trans_id.toUpperCase() + ".png"
+
             var image = document.getElementsByClassName("cancer_trans_id")[0]
-            image.src = "static/images/" + cancer_trans_id.toUpperCase() + ".png"
+            image.src = "static/images/" + CanSampleId + genename + ".png"
 
-            var image_normal = document.getElementsByClassName("normal_trans_id")[0]
-            image_normal.src = "static/images/" + normal_trans_id.toUpperCase() + ".png"
+            // var image_normal = document.getElementsByClassName("normal_trans_id")[0]
+          //  var image_normal = document.getElementsByClassName("normal_trans_id")[0]
+          //  image_normal.src = "static/images/" + CamSampleId + genename + ".png"
 
-            document.getElementById('image').innerHTML = image.src
-            document.getElementById('image_normal').innerHTML = image_normal.src
+          //  document.getElementById('image').innerHTML = image.src
+          //  document.getElementById('image_normal').innerHTML = image_normal.src
         };
     </script>
     <script src="{{ url_for('static', filename='js/gene_based.js') }}"></script>

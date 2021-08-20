@@ -8,7 +8,6 @@ import json
 from flaskext.mysql import MySQL
 import functools
 import operator
-#from quart import Quart, render_template, request
 
 app = Flask(__name__)
 #app = Quart(__name__)
@@ -159,13 +158,23 @@ def change_features5():
 @app.route("/Transcript_Based", methods=['GET', 'POST'])
 def Transcript_Based():
 
-    ensg_enst_ensp_description = pd.read_table('/home/abxka/ensg_enst_ensp_des.txt')
-    ensp_genename = ensg_enst_ensp_description.iloc[:,2:4]
-
-    # Take genename and enstid from url
     genename = request.args.get('gene')
     enstid = request.args.get('enst')
 
+    cur_ensp = mysql.get_db().cursor()
+    #sql_ensp = '''SELECT ENSGid, ENSTid, GeneName, TranscriptName FROM ensg_enst_ensp_des WHERE ENSTid = %s '''
+    cur_ensp.execute('''SELECT ENSPid, GeneName  FROM ensg_enst_ensp_des ''')
+    #adr_ensp = (enstid,)
+    #cur_ensp.execute(sql_ensp, adr_ensp)
+    ensp_tuple = cur_ensp.fetchall()
+    ensp_genename = pd.DataFrame(ensp_tuple, columns=['ENSPid', 'GeneName'])
+
+    #ensg_enst_ensp_description = pd.read_table('/home/abxka/ensg_enst_ensp_des.txt')
+    #ensp_genename = ensg_enst_ensp_description.iloc[:,2:4]
+
+    # Take genename and enstid from url
+    ensp_genenames = ensp_genename.set_index('ENSPid', drop=False)
+    ensp_genename_dict = ensp_genenames.to_dict('series')
     partner_genenames = []
     cgc_partners = []
 
@@ -182,155 +191,146 @@ def Transcript_Based():
 
     df = df.rename(columns={'ENSG': 'ENSGid', 'NumberOfUniqMissedInteractionsOfDomCancerTrans': 'MissedInteractions','TotalNumberOfStringInt': 'NumberOfStringInt'})
 
-
     if genename == "":
         genename = df[df.DomCancerTrans == enstid].iloc[0,3]
     elif genename == None:
         genename = df[df.DomCancerTrans == enstid].iloc[0,3]
 
-    # Query cancer gene census genes from mysql table
-    cur4 = mysql.get_db().cursor()
-    cur4.execute( '''SELECT `Gene Symbol` FROM cancer_gene_census ''' )
-    cancer_gene_census_tuple = cur4.fetchall()
-    df_cgc = pd.DataFrame(cancer_gene_census_tuple, columns=['Gene Symbol'])
-    df_cgc =  df_cgc.rename(columns={'Gene Symbol': 'GeneName'})
+    enst_list = list(df[df.GeneName1 == genename]['DomCancerTrans'].unique())
 
-    df_cgc_list = df_cgc['GeneName'].tolist()
+    if enstid in enst_list:
+        # Query cancer gene census genes from mysql table
+        cur4 = mysql.get_db().cursor()
+        cur4.execute( '''SELECT `Gene Symbol` FROM cancer_gene_census ''' )
+        cancer_gene_census_tuple = cur4.fetchall()
+        df_cgc = pd.DataFrame(cancer_gene_census_tuple, columns=['Gene Symbol'])
+        df_cgc =  df_cgc.rename(columns={'Gene Symbol': 'GeneName'})
 
-    df[['Splitted','CancerType2']] = df.Tissue.str.split('.', expand=True)
-    df = df.drop_duplicates()
-    data_dict = df.to_dict(orient='records')
-
-    #make a table for some statistics
-    statistic_table = df[['GeneName1', 'GeneName2', 'NumberOfStringInt', 'MissedInteractions', 'Domain1', 'Domain2', 'StringDensityRank1', 'Region1', 'DomCancerTrans']].drop_duplicates()
-    statistics_table_dict = statistic_table.to_dict(orient='records')
-
-    ### DRAW PIE CHARTS
-    data = make_subplots(rows=1, cols=3, specs=[[{'type':'domain'}, {'type':'domain'}, {'type':'domain'}]],
-                        subplot_titles=("STRING Density Score", "% Interaction Lost", "Cancer Types"))
-
-    data.add_trace(go.Pie(values=[statistic_table.iloc[0,6]*100,(100-(statistic_table.iloc[0,6]*100))],
-                        labels=['STRING Density Score',''], pull=[0.2, 0]), 1, 1)
-    data.update_traces(selector=dict(type='pie'),
-                              marker=dict(colors=['lightgreen', 'White'], line=dict(color='#000000', width=4)))
-
-    data.add_trace(go.Pie(labels=df.drop_duplicates(subset=['CancerSampleId', 'Tissue']).Tissue), 1, 3)
-
-    data.update_traces(selector=dict(type='pie'),
-                              marker=dict(line=dict(color='#000000', width=4)))
+        df_cgc_list = df_cgc['GeneName'].tolist()
 
 
-    if statistic_table.iloc[0,2] == 0:
+        df[['Splitted','CancerType2']] = df.Tissue.str.split('.', expand=True)
+        df = df.drop_duplicates()
+        data_dict = df.to_dict(orient='records')
 
-        data.add_trace(go.Pie(values=[100, 0], labels=['% of Remaining Interaction', '% of  Interaction Lost']),1,2)
+        #make a table for some statistics
+        statistic_table = df[['GeneName1', 'GeneName2', 'NumberOfStringInt', 'MissedInteractions', 'Domain1', 'Domain2', 'StringDensityRank1', 'Region1', 'DomCancerTrans']].drop_duplicates()
+        statistics_table_dict = statistic_table.to_dict(orient='records')
+
+        ### DRAW PIE CHARTS
+        data = make_subplots(rows=1, cols=3, specs=[[{'type':'domain'}, {'type':'domain'}, {'type':'domain'}]],
+                            subplot_titles=("STRING Density Score", "% Interaction Lost", "Cancer Types"))
+
+        data.add_trace(go.Pie(values=[statistic_table.iloc[0,6]*100,(100-(statistic_table.iloc[0,6]*100))],
+                            labels=['STRING Density Score',''], pull=[0.2, 0]), 1, 1)
         data.update_traces(selector=dict(type='pie'),
-                          marker=dict(colors=['mediumturquoise', 'gold'], line=dict(color='#000000', width=4)))
+                                  marker=dict(colors=['lightgreen', 'White'], line=dict(color='#000000', width=4)))
 
-    else:
-        data.add_trace(go.Pie(values=[(statistic_table.iloc[0,2]-statistic_table.iloc[0,3])*100/(statistic_table.iloc[0,2]),statistic_table.iloc[0,3]*100/(statistic_table.iloc[0,2])], labels=['% of Remaining Interaction', '% of  Interaction Lost']),1,2)
+        data.add_trace(go.Pie(labels=df.drop_duplicates(subset=['CancerSampleId', 'Tissue']).Tissue), 1, 3)
+
         data.update_traces(selector=dict(type='pie'),
-                          marker=dict(colors=['mediumturquoise', 'gold'], line=dict(color='#000000', width=4)))
-
-    data.update_layout(showlegend=False, title_font_size=18)
-    graphJSON2 = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+                                  marker=dict(line=dict(color='#000000', width=4)))
 
 
-    ## end of PIE CHART
-    ## Query Ensembl Mart and use it to merge transcript IDs in interactiondistruption table
-    cur6 = mysql.get_db().cursor()
-    sql6 = ''' SELECT `Ensembl Transcript ID`, `Associated Transcript Name` FROM mart_export WHERE `Ensembl Transcript ID` = %s '''
-    adr6 = (enstid,)
-    cur6.execute(sql6, adr6)
-    biomart_tuple = cur6.fetchall()
-    df_biomart = pd.DataFrame(biomart_tuple, columns=['Ensembl Transcript ID','Associated Transcript Name'])
-    df_biomart = df_biomart.drop_duplicates()
-    df_biomart =  df_biomart.rename(columns={'Ensembl Transcript ID': 'DomCancerTrans','Associated Transcript Name':'Transcript_Name'})
-    result_df = pd.merge(df, df_biomart, how='inner', on='DomCancerTrans')
-    result = result_df.to_dict(orient='records')
+        if statistic_table.iloc[0,2] == 0:
 
-
-    ## Take missed interactions for the interested ENST id from the missed_interactions table from mysqldb
-    cur3 = mysql.get_db().cursor()
-    sql3 = ''' SELECT ENSG, ENSP, ENST, MissInts FROM missed_interactions WHERE ENST = %s '''
-    adr3 = (enstid,)
-    cur3.execute(sql3, adr3)
-    missed_interactions_tuple = cur3.fetchall()
-    missed_interactions = pd.DataFrame(missed_interactions_tuple, columns=['ENSG', 'ENSP', 'ENST', 'MissInts'])
-    #missed_interactions =  missed_interactions.rename(columns={'ENSG':'ENSG', 'ENSP':'ENSP', 'ENST':'ENST', 'MissInts': 'MissInts'})
-
-    Isoform_Int_Network_splitted = pd.DataFrame(missed_interactions.MissInts.str.split(':').tolist())
-    #frames = [missed_interactions, Isoform_Int_Network_splitted]
-    #Isoform_Int_Network = pd.concat(frames, axis=1)
-    Isoform_Int_Network = pd.concat([missed_interactions, Isoform_Int_Network_splitted], axis=1)
-
-    ENSP_list = list()
-    ensp_frame = list()
-
-    for eachcolumn in range(3, len(Isoform_Int_Network.iloc[0,:])):
-        Isoform_Int_Network.iloc[0,eachcolumn] = str(Isoform_Int_Network.iloc[0,eachcolumn])
-
-        if "ENSP" in Isoform_Int_Network.iloc[0,eachcolumn]:
-            ENSP_list.append(Isoform_Int_Network.iloc[0,eachcolumn])
+            data.add_trace(go.Pie(values=[100, 0], labels=['% of Remaining Interaction', '% of  Interaction Lost']),1,2)
+            data.update_traces(selector=dict(type='pie'),
+                              marker=dict(colors=['mediumturquoise', 'gold'], line=dict(color='#000000', width=4)))
 
         else:
-            continue
+            data.add_trace(go.Pie(values=[(statistic_table.iloc[0,2]-statistic_table.iloc[0,3])*100/(statistic_table.iloc[0,2]),statistic_table.iloc[0,3]*100/(statistic_table.iloc[0,2])], labels=['% of Remaining Interaction', '% of  Interaction Lost']),1,2)
+            data.update_traces(selector=dict(type='pie'),
+                              marker=dict(colors=['mediumturquoise', 'gold'], line=dict(color='#000000', width=4)))
 
-        ensp_frame.append(ENSP_list)
-
-    ensp_frame = functools.reduce(operator.iconcat, ensp_frame, [])
-
-    #for eachpartner in ensp_frame:
-    #    for j in range(0, len(ensp_genename.iloc[:,0])):
-    #        if eachpartner == ensp_genename.iloc[j,0]:
-    #            partner_genenames.append(ensp_genename.iloc[j,1])
-
-    ensp_genenames2 = ensp_genename.dropna()
-    for eachpartner in ensp_frame:
-        try:
-            genenames = ensp_genenames2[ensp_genenames2.iloc[:,0] == eachpartner].iloc[0,1]
-            partner_genenames.append(genenames)
-        except:
-            pass
-
-    #partner_genenames = list(set(partner_genenames))
+        data.update_layout(showlegend=False, title_font_size=18)
+        graphJSON2 = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
 
 
-    for eachpartner in partner_genenames:
-        if eachpartner in df_cgc_list:
-            cgc_partners.append(eachpartner)
+        ## end of PIE CHART
+        ## Query Ensembl Mart and use it to merge transcript IDs in interactiondistruption table
+        cur6 = mysql.get_db().cursor()
+        sql6 = ''' SELECT `Ensembl Transcript ID`, `Associated Transcript Name` FROM mart_export WHERE `Ensembl Transcript ID` = %s '''
+        adr6 = (enstid,)
+        cur6.execute(sql6, adr6)
+        biomart_tuple = cur6.fetchall()
+        df_biomart = pd.DataFrame(biomart_tuple, columns=['Ensembl Transcript ID','Associated Transcript Name'])
+        df_biomart = df_biomart.drop_duplicates()
+        df_biomart =  df_biomart.rename(columns={'Ensembl Transcript ID': 'DomCancerTrans','Associated Transcript Name':'Transcript_Name'})
+        result_df = pd.merge(df, df_biomart, how='inner', on='DomCancerTrans')
+        result = result_df.to_dict(orient='records')
 
-    cgc_partners_df = pd.DataFrame({'GeneName':cgc_partners})
-    df_cgc_dict  = cgc_partners_df.drop_duplicates().to_dict(orient='records')
+
+        ## Take missed interactions for the interested ENST id from the missed_interactions table from mysqldb
+        cur3 = mysql.get_db().cursor()
+        sql3 = ''' SELECT ENSG, ENSP, ENST, MissInts FROM missed_interactions WHERE ENST = %s '''
+        adr3 = (enstid,)
+        cur3.execute(sql3, adr3)
+        missed_interactions_tuple = cur3.fetchall()
+        missed_interactions = pd.DataFrame(missed_interactions_tuple, columns=['ENSG', 'ENSP', 'ENST', 'MissInts'])
+        #missed_interactions =  missed_interactions.rename(columns={'ENSG':'ENSG', 'ENSP':'ENSP', 'ENST':'ENST', 'MissInts': 'MissInts'})
+
+        Isoform_Int_Network_splitted = pd.DataFrame(missed_interactions.MissInts.str.split(':').tolist())
+        #frames = [missed_interactions, Isoform_Int_Network_splitted]
+        #Isoform_Int_Network = pd.concat(frames, axis=1)
+        Isoform_Int_Network = pd.concat([missed_interactions, Isoform_Int_Network_splitted], axis=1)
+
+        ENSP_list = list()
+        ensp_frame = list()
+
+        for eachcolumn in range(3, len(Isoform_Int_Network.iloc[0,:])):
+            Isoform_Int_Network.iloc[0,eachcolumn] = str(Isoform_Int_Network.iloc[0,eachcolumn])
+
+            if "ENSP" in Isoform_Int_Network.iloc[0,eachcolumn]:
+                ENSP_list.append(Isoform_Int_Network.iloc[0,eachcolumn])
+
+            else:
+                continue
+
+            ensp_frame.append(ENSP_list)
+
+        ensp_frame = functools.reduce(operator.iconcat, ensp_frame, [])
+
+        #for eachpartner in ensp_frame:
+        #    for j in range(0, len(ensp_genename.iloc[:,0])):
+        #        if eachpartner == ensp_genename.iloc[j,0]:
+        #            partner_genenames.append(ensp_genename.iloc[j,1])
+
+        #ensp_genenames2 = ensp_genename.dropna()
+        #for eachpartner in ensp_frame:
+        #    try:
+        #        genenames = ensp_genenames2[ensp_genenames2.iloc[:,0] == eachpartner].iloc[0,1]
+        #        partner_genenames.append(genenames)
+        #    except:
+        #        pass
 
 
-    #return render_template('network_lochen.html', genename=genename, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, df_cgc_list=df_cgc_list, result=result, cgc=df_cgc_dict, df_cgc_all_dict=df_cgc_all_dict, graphJSON2=graphJSON2)
+        for eachpartner in ensp_frame:
+            try:
+                genenames = ensp_genename_dict['GeneName'][eachpartner]
+                partner_genenames.append(genenames)
+            except:
+                pass
+
+
+        for eachpartner in partner_genenames:
+            if eachpartner in df_cgc_list:
+                cgc_partners.append(eachpartner)
+
+        cgc_partners_df = pd.DataFrame({'GeneName':cgc_partners})
+        df_cgc_dict  = cgc_partners_df.drop_duplicates().to_dict(orient='records')
+
+        #return render_template('network_lochen.html', genename=genename, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, df_cgc_list=df_cgc_list, result=result, cgc=df_cgc_dict, df_cgc_all_dict=df_cgc_all_dict, graphJSON2=graphJSON2)
     return render_template('network_lochen.html', genename=genename, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, df_cgc_list=df_cgc_list, result=result, cgc=df_cgc_dict, graphJSON2=graphJSON2)
 
 
-### Gene Based
+    ### Gene Based
 
 @app.route("/GeneBased", methods=['GET', 'POST'])
 def GeneBased():
 
     # Take genename and enstid from url
     genename = request.args.get('gene')
-
-    # Query interactiondisruptionindominanttranscripts from mysql table
-    #cur2 = mysql.get_db().cursor()
-    #sql = '''SELECT Tissue, ENSG, NumberOfGtexMDIs, GeneName1, GeneName2, TotalNumberOfStringInt, NumberOfUniqMissedInteractionsOfDomCancerTrans, Pfam1, Domain1, Pfam2, Domain2, CancerSampleId, DomCancerTrans, StringDensityRank1, Region1 FROM interactiondisruptionindominanttranscripts FORCE INDEX (gene_cmdt) WHERE DomCancerTrans = %s '''
-    #adr = (genename,)
-    #cur2.execute(sql, adr)
-    #isonet_tuple = cur2.fetchall()
-    #df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'ENSG', 'NumberOfGtexMDIs', 'GeneName1', 'GeneName2',
-                                          #  'TotalNumberOfStringInt', 'NumberOfUniqMissedInteractionsOfDomCancerTrans',
-                                           # 'Pfam1', 'Domain1', 'Pfam2', 'Domain2', 'CancerSampleId', 'DomCancerTrans',
-                                        #    'StringDensityRank1','Region1'])
-
-    #df =  df.rename(columns={'Tissue': 'Tissue', 'ENSG': 'ENSGid','NumberOfGtexMDIs': 'NumberOfGtexMDIs','GeneName1': 'GeneName1','GeneName2': 'GeneName2',
-    #                            'TotalNumberOfStringInt': 'NumberOfStringInt','NumberOfUniqMissedInteractionsOfDomCancerTrans': 'MissedInteractions',
-    #                            'Pfam1': 'Pfam1','Domain1': 'Domain1','Pfam2': 'Pfam2','Domain2': 'Domain2', 'CancerSampleId': 'CancerSampleId', 'DomCancerTrans':'DomCancerTrans', 'StringDensityRank1':'StringDensityRank1', 'Region1':'Region1'})
-
-    #df = df.rename(columns={'ENSG': 'ENSGid', 'NumberOfUniqMissedInteractionsOfDomCancerTrans': 'MissedInteractions','TotalNumberOfStringInt': 'NumberOfStringInt'})
 
     # Query cancer gene census genes from mysql table
     cur4 = mysql.get_db().cursor()
@@ -355,7 +355,6 @@ def GeneBased():
 
     data_dict = df.to_dict(orient='records')
 
-## to put the transcript names inside the table
     cur6 = mysql.get_db().cursor()
     cur6.execute(''' SELECT `Ensembl Transcript ID`, `Associated Transcript Name` FROM mart_export ''')
     biomart_tuple = cur6.fetchall()
@@ -365,7 +364,6 @@ def GeneBased():
 
     result_df = pd.merge(df, df_biomart, how='inner', on='DomCancerTrans')
     result = result_df.to_dict(orient='records')
-## end of the table
 
 
     statistic_table = df[['GeneName1', 'GeneName2', 'NumberOfStringInt', 'MissedInteractions', 'Domain1', 'Domain2', 'StringDensityRank1', 'Region1', 'DomCancerTrans']].drop_duplicates()
@@ -389,7 +387,6 @@ def GeneBased():
 
     data.update_layout(title=" Gene Name: {} ".format(genename), showlegend=False, title_font_size=24)
     graphJSON2 = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
-
 
     #return render_template('network_lochen.html', genename=genename, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, df_cgc_list=df_cgc_list, result=result, cgc=df_cgc_dict, df_cgc_all_dict=df_cgc_all_dict, graphJSON2=graphJSON2)
     return render_template('GeneBased.html', genename=genename, data=data_dict, data_statistics = statistics_table_dict, result=result, graphJSON2=graphJSON2)
@@ -447,6 +444,7 @@ def Sample_Based():
     cancer_trans_id = list(dff['DomCancerTrans'])[0] ## DomCancerTrans id
     normal_trans_ids = dff['GTExMDIs'].str.split(":", n = 1, expand = True)
     normal_trans_id = normal_trans_ids.iloc[0,0] # Normal Transcript Id
+
 
     return render_template("Sample_Based.html", CancerSampleId=CancerSampleId, tissue=tissue, genename=genename, normal_trans_id=normal_trans_id, cancer_trans_id=cancer_trans_id)
 

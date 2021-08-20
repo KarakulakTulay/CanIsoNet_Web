@@ -166,34 +166,36 @@
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
 
     <script language='javascript'>
-        function invokeIsonet() {
-            var stringNetwork = document.getElementById('svg_network_image');
-            if (stringNetwork == null) {
-                setTimeout(invokeIsonet, 50)
-            } else {
-                isonet();
-            }
-        }
+       function invokeIsonet() {
+           var stringNetwork = document.getElementById('svg_network_image');
+           if (stringNetwork == null) {
+               setTimeout(invokeIsonet, 10)
+           } else {
+               isonet();
+           }
+       }
 
-        function send_request_to_string() {
+       function send_request_to_string() {
 
-            var stringNetwork = document.getElementById('svg_network_image');
-            if (stringNetwork !== null) {
-                stringNetwork.remove();
-            }
+           var stringNetwork = document.getElementById('svg_network_image');
+           if (stringNetwork !== null) {
+               stringNetwork.remove();
+           }
 
-            text = '{{ genename }}';
-            var protein = text.split(' ');
+           text = '{{ genename }}';
+           //enstidxx = '{{ enstid }}';
 
-            getSTRING('https://string-db.org', {
-                'species': '9606',
-                'identifiers': protein,
-                'network_flavor': 'confidence',
-                'caller_identity': 'www.amazing_network_app.org',
-                'required_score':900,
-                'add_nodes':10
-            })
-        }
+           var protein = text.split(' ');
+
+           getSTRING('https://string-db.org', {
+               'species': '9606',
+               'identifiers': protein,
+               'network_flavor': 'confidence',
+               'caller_identity': 'www.amazing_network_app.org',
+               'required_score':900,
+               'add_nodes':10
+           })
+       }
 
         var cgc_array = [];
         function isonet() {

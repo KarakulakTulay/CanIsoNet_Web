@@ -64,11 +64,11 @@
                             </thead>
                             {% for value in data %}
                             <tr>
-                              <td><a href="Cancer_Based?cancer={{ value['Tissue']}}">{{ value['CancerType2']}}</a></td>
-                              <td><a href="Sample_Based?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['CancerSampleId']}}">{{ value['CancerSampleId']}}</a></td>
-                              <td><a href="GeneBased?gene={{ value['GeneName1'] }}">{{ value['GeneName1'] }}</a></td>
-                              <td><a href="Transcript_Based?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
-                              <td><a href="Transcript_Based?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['Transcript_Name'] }}</a></td>
+                              <td><a href="Cancer?cancer={{ value['Tissue']}}">{{ value['CancerType2']}}</a></td>
+                              <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['CancerSampleId']}}">{{ value['CancerSampleId']}}</a></td>
+                              <td><a href="Gene?gene={{ value['GeneName1'] }}">{{ value['GeneName1'] }}</a></td>
+                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
+                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['Transcript_Name'] }}</a></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -97,8 +97,8 @@
                             </thead>
                             {% for value in data2 %}
                             <tr>
-                                <td><a href="Cancer_Based?cancer={{ value['CancerType']}}">{{ value['CancerType2']}}</a></td>
-                              <!--  <td><a href="Sample_Based?tissue={{ value['CancerType']}}&sampleid={{ value['SampleID']}}">{{ value['SampleID']}}</a></td> -->
+                                <td><a href="Cancer?cancer={{ value['CancerType']}}">{{ value['CancerType2']}}</a></td>
+                              <!--  <td><a href="Sample?tissue={{ value['CancerType']}}&sampleid={{ value['SampleID']}}">{{ value['SampleID']}}</a></td> -->
                                 <td> {{ value['SampleID'] }} </td>
                                 <td> {{ value['NumberOfMDTs'] }} </td>
                               <!--  <td> {{ value['NumberOfMutations'] }} </td> -->
@@ -124,7 +124,8 @@
         Plotly.plot('sample_graph', plot, {}, {responsive: true});
     </script>
     <script>
-        SampleCancerType = '{{ SampleCancerType }}';
+        SampleCancerType_gtex = '{{ SampleCancerType }}';
+        SampleCancerType = SampleCancerType_gtex.split('.')[1]
         document.getElementById('SampleCancerType').innerHTML = SampleCancerType;
     </script>
     {% endblock %}

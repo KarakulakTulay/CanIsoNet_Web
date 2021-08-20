@@ -75,7 +75,7 @@
                     <td><b>{{ value['GeneName1'] }}</b>-{{ value['GeneName2'] }}</td>
                     <td><b><a href="http://pfam.xfam.org/family/{{ value['Domain1'] }}">{{ value['Domain1'] }}</b>({{ value['Region1'] }})-<a href="http://pfam.xfam.org/family/{{ value['Domain2'] }}">{{ value['Domain2'] }}</td>
                   <!--  <td>{{ value['StringDensityRank1'] }}</td> -->
-                    <td><a href="Transcript_Based?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
+                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
                 </tr>
                 {% endfor %}
             </table>
@@ -118,12 +118,12 @@
                           </thead>
                               {% for value in result %}
                               <tr>
-                                  <td><a href="Sample_Based?sampleid={{ value['CancerSampleId']}}&gene={{ value['GeneName1']}}&tissue={{ value['Tissue']}}">{{ value['CancerSampleId']}}</a></td>
-                                  <td><a href="Cancer_Based?cancer={{ value['Tissue']}}">{{ value['CancerType2']}}</a></td>
-                                  <td><a href="Gene_Based?gene={{ value['GeneName1'] }}">{{ value['GeneName1'] }}</a></td>
+                                  <td><a href="Sample?sampleid={{ value['CancerSampleId']}}&gene={{ value['GeneName1']}}&tissue={{ value['Tissue']}}">{{ value['CancerSampleId']}}</a></td>
+                                  <td><a href="Cancer?cancer={{ value['Tissue']}}">{{ value['CancerType2']}}</a></td>
+                                  <td><a href="Gene?gene={{ value['GeneName1'] }}">{{ value['GeneName1'] }}</a></td>
                                   <td>{{ value['GeneName2'] }}</td>
-                                  <td><a href="Transcript_Based?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
-                                  <td><a href="Transcript_Based?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['Transcript_Name'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['Transcript_Name'] }}</a></td>
 
                               </tr>
                               {% endfor %}

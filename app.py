@@ -52,8 +52,8 @@ def home():
 
     return render_template('home.html', data=cancertypes_dict, data2=genenamecmdt_gene_list, data3=genenamecmdt_gene_cmdt, temp_dict=temp_dict, genenamecmdt_gene_tn=genenamecmdt_gene_tn)
 
-@app.route("/Cancer_Based", methods=['GET', 'POST'])
-def Cancer_Based():
+@app.route("/Cancer", methods=['GET', 'POST'])
+def Cancer():
 
     SampleCancerType = request.args.get('cancer')
 
@@ -155,8 +155,8 @@ def change_features5():
 
     return graphJSON
 
-@app.route("/Transcript_Based", methods=['GET', 'POST'])
-def Transcript_Based():
+@app.route("/Transcript", methods=['GET', 'POST'])
+def Transcript():
 
     genename = request.args.get('gene')
     enstid = request.args.get('enst')
@@ -326,8 +326,8 @@ def Transcript_Based():
 
     ### Gene Based
 
-@app.route("/GeneBased", methods=['GET', 'POST'])
-def GeneBased():
+@app.route("/Gene", methods=['GET', 'POST'])
+def Gene():
 
     # Take genename and enstid from url
     genename = request.args.get('gene')
@@ -423,8 +423,8 @@ def download():
     return render_template("download.html")
 
 
-@app.route("/Sample_Based", methods=['GET', 'POST'])
-def Sample_Based():
+@app.route("/Sample", methods=['GET', 'POST'])
+def Sample():
 
     CancerSampleId = request.args.get('sampleid')
     genename = request.args.get('gene')

@@ -120,8 +120,8 @@
                    </thead>
                    {% for value in data %}
                    <tr>
-                       <td><a href="Cancer_Based?cancer={{ value['PCAWG_GTEx']}}">{{ value['PCAWG-Code']}}</a></td>
-                       <td><a href="Cancer_Based?cancer={{ value['PCAWG_GTEx']}}">{{ value['Cancer Type Name']}}</a></td>
+                       <td><a href="Cancer?cancer={{ value['PCAWG_GTEx']}}">{{ value['PCAWG-Code']}}</a></td>
+                       <td><a href="Cancer?cancer={{ value['PCAWG_GTEx']}}">{{ value['Cancer Type Name']}}</a></td>
                        <td>PCAWG</td>
                    </tr>
                    {% endfor %}

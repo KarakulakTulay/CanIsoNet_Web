@@ -155,7 +155,7 @@
             function GeneFunction() {
                 genename = document.getElementById("genetakeinput").value
                 if (genename.length !== 0) {
-                    window.open("https://www.caniso.net/GeneBased?gene=" + document.getElementById("genetakeinput").value);
+                    window.open("https://www.caniso.net/Gene?gene=" + document.getElementById("genetakeinput").value);
                 }
             }
         </script>
@@ -167,7 +167,7 @@
                     if (iso_value.startsWith("ENST")) {
                         var genename = dictionary.filter(function (element) { return element.DomCancerTrans == iso_value })
                         var gene_name = genename[0]['GeneName1_x']
-                        window.open("https://www.caniso.net/Transcript_Based?gene=" + gene_name + "&enst=" + document.getElementById("isotakeinput").value)
+                        window.open("https://www.caniso.net/Transcript?gene=" + gene_name + "&enst=" + document.getElementById("isotakeinput").value)
 
                     } else {
                         var new_genename = dictionary.filter(function (element) { return element.Transcript_Name == iso_value })
@@ -175,7 +175,7 @@
 
                         var enst_value = dictionary.filter(function (element) { return element.Transcript_Name == iso_value })
                         var iso_https = enst_value[0]['DomCancerTrans']
-                        window.open("https://www.caniso.net/Transcript_Based?gene=" + new_gene_name + "&enst=" + iso_https);
+                        window.open("https://www.caniso.net/Transcript?gene=" + new_gene_name + "&enst=" + iso_https);
                     }
                 }
                // window.location.href= "https://www.caniso.net/Transcript_Based?gene=" + document.getElementById("gene2takeinput").value + "&enst=" + document.getElementById("isotakeinput").value;

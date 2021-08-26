@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/amblem.png') }}">
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
@@ -43,18 +44,25 @@
             <ul>
             <li>
               Download <a href="https://github.com/abxka/CanIsoNet/blob/master/interactionDisruptionInDominantTranscripts_min2_int_anno_mutationsWithEnhancerUniq_all.tsv.gz?raw=True" >Interaction Disruption In Dominant Transcripts</a>
+              <br> Processed data which includes all detected cMDTs, their sample information & disrupted interactions (comprising domain-domain interaction), string density score of genes.
              </li>
              <br>
              <li>
-                Download <a href="http://version10.string-db.org/download/protein.links.detailed.v10/9606.protein.links.detailed.v10.txt.gz">String Interaction File</a>
+                Download <a href="http://version10.string-db.org/download/protein.links.detailed.v10/9606.protein.links.detailed.v10.txt.gz">STRING Interaction File</a>
+            <br>
+                Data includes STRING human protein-protein interaction data.
              </li>
              <br>
              <li>
                  Download <a href="https://github.com/KarakulakTulay/CanIsoNet_Web/blob/master/static/datasets/interactionInIsoforms.zip?raw=true" > Isoform Specific Interaction File</a>
+                 <br>
+                Data includes isoform specific interaction data where missed and remaining interactions are reported.
              </li>
              <br>
             <li>
                  Download <a href="https://github.com/KarakulakTulay/CanIsoNet_Web/blob/master/static/datasets/https://github.com/KarakulakTulay/CanIsoNet_Web/blob/master/static/datasets/string_v10_density_900_3.tsv.gz?raw=true" > String Interaction Density Score</a>
+                <br>
+                Data includes STRING network interaction score for each gene. This file also includes STRING density score of genes which were not found as cMDT so that not reported in CanIsoNet.
              </li>
             </ul>
 

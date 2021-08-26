@@ -9,9 +9,12 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/amblem.png') }}">
+
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 
 
 </head>
@@ -31,7 +34,12 @@
                         <br>
                         Cancer Type: <span id="tissue"></span>
                         <br>
-                        Sample ID: <span id="CancerSampleId"></span></h5>
+                        Sample ID: <span id="CancerSampleId"></span>
+                        <br>
+                        MDT:<a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ normal_trans_id }}">{{ normal_trans_id }}</a>
+                        <br>
+                        cMDT:<a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ cancer_trans_id }}">{{ cancer_trans_id }}</a></h5>
+                        <br>
                     </div>
                 </div>
             </div>
@@ -43,7 +51,13 @@
                             <i class="fas fa-chart-bar mr-1"></i> Expression Count of MDT and cMDT
                         </div>
                         <div class="card-body">
-                            <div class="chart3" id="bargraph"></div>
+                            <div class="chart3" id="bargraph">
+                            </div>
+                            <div class="text-center">
+                              <div class="spinner-border" role="status" id="loadingsymbol">
+                               <!-- <span class="sr-only">Loading...</span> -->
+                              </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -58,14 +72,9 @@
                         </div>
                         <div class="card-body">
                              <!-- <span id="normal_trans_id"></span> -->
+                            <h6><b>Domain Structures of MDT and cMDT</b></h6>
                             <br>
-                            <h6><b>Normal Most Dominant Transcript (MDT):</b></h6><a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ normal_trans_id }}">{{ normal_trans_id }}</a>
-                            <h6><b>Cancer Specific MDT (cMDT):</b></h6><a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ cancer_trans_id }}">{{ cancer_trans_id }}</a>
-                            <br>
-                            <br>
-                            <h6>Domain Structure of Transcripts</h6>
-                            <br>
-                            <img class="cancer_trans_id mx-auto d-block" id ="cancer_trans_id" src="xx.png" class="mx-auto d-block" width="600" height="450">
+                            <img class="cancer_trans_id mx-auto d-block" id ="cancer_trans_id" src="xx.png" class="mx-auto d-block" style="max-width: 100%">
                         <br>
                         </div>
                     </div>
@@ -80,7 +89,8 @@
         url = new URL(window.location.href)
         CanSampleId = url.searchParams.get("sampleid")
         genename = url.searchParams.get("gene")
-        tissuetype = url.searchParams.get("tissue")
+        tissuetype_gtex = url.searchParams.get("tissue")
+        tissuetype = tissuetype_gtex.split('.')[1]
 
         document.getElementById('genename').innerHTML = genename;
         document.getElementById('tissue').innerHTML = tissuetype;
@@ -104,7 +114,7 @@
             // image.src = "static/images/" + cancer_trans_id.toUpperCase() + ".png"
 
             var image = document.getElementsByClassName("cancer_trans_id")[0]
-            image.src = "static/images/" + CanSampleId + genename + ".png"
+            image.src = "static/images/divide_files/" + CanSampleId + genename + "-fs8.png"
 
             // var image_normal = document.getElementsByClassName("normal_trans_id")[0]
           //  var image_normal = document.getElementsByClassName("normal_trans_id")[0]
@@ -115,13 +125,13 @@
         };
     </script>
     <script src="{{ url_for('static', filename='js/gene_based.js') }}"></script>
+    <script>
+        $('document').ready(function() {
+              $('#loadingsymbol').fadeOut();
+        });
+    </script>
     <script type="text/javascript">
-        var plot = {
-            {
-                graphJSON | safe
-
-            }
-        };
+        var plot = {{ graphJSON | safe }};
         Plotly.plot('bargraph', plot, {});
     </script>
     {% endblock %}

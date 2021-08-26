@@ -4,3 +4,15 @@ It holds a rich set of annotations on over 120000 isoform switching events, incl
 CanIsoNet provides two main functionalities to the users:
 1) Browsing various statistics on cancer-specific isoform switching events in each 1209 cancer samples from the Pan-Cancer Analysis of Whole Genomes (PCAWG) project.
 2) Exploring and visualizing network disruptions in the STRING interaction network.
+
+Shield: [![CC BY 4.0][cc-by-shield]][cc-by]
+
+This work is licensed under a
+[Creative Commons Attribution 4.0 International License][cc-by].
+
+[![CC BY 4.0][cc-by-image]][cc-by]
+
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
+[cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
+[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
+

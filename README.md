@@ -9,7 +9,7 @@ CanIsoNet provides two main functionalities to the users:
 
 ## Availability
 
-CanIsoNet is freely available at caniso.net [https://www.caniso.net/]
+CanIsoNet is freely available at [caniso.net](https://www.caniso.net/)
 
 ## Citation
 If you use CanIsoNet v1.0, please cite the following article:

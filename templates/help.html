@@ -44,16 +44,16 @@
           <!--  <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical"> -->
               <ul class="nav nav-tabs flex-column nav-pills" id="myTab" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link active show" id="v-pills-mdt-tab" data-toggle="pill" href="#v-pills-mdt" role="tab" aria-controls="v-pills-mdt" aria-selected="true">What is Isoform Switching?</a>
+                  <a class="nav-link active show" id="v-pills-exp-tab" data-toggle="pill" href="#v-pills-exp" role="tab" aria-controls="v-pills-exp" aria-selected="true">How To Use?</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="v-pills-mdt-tab" data-toggle="pill" href="#v-pills-mdt" role="tab" aria-controls="v-pills-mdt" aria-selected="false">What is Isoform Switching?</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" id="v-pills-isonet-tab" data-toggle="pill" href="#v-pills-isonet" role="tab" aria-controls="v-pills-isonet" aria-selected="false">CanIsoNet Methodology</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" id="v-pills-sample-tab" data-toggle="pill" href="#v-pills-sample" role="tab" aria-controls="v-pills-sample" aria-selected="false">Sample Sizes</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" id="v-pills-exp-tab" data-toggle="pill" href="#v-pills-exp" role="tab" aria-controls="v-pills-exp" aria-selected="false">How To Use?</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" id="v-pills-faq-tab" data-toggle="pill" href="#v-pills-faq" role="tab" aria-controls="v-pills-faq" aria-selected="false">Frequently Asked Questions</a>
@@ -66,7 +66,68 @@
           </div>
           <div class="col-12 col-md-8">
               <div class="tab-content" id="v-pills-tabContent">
-                      <div class="tab-pane fade active show" id="v-pills-mdt" role="tabpanel" aria-labelledby="v-pills-mdt-tab">
+
+                      <div class="tab-pane fade active show" id="v-pills-exp" role="tabpanel" aria-labelledby="v-pills-exp-tab">
+                        <p> <b><u> Starting Points at Home Page:</u></b><br>
+                          <br>
+                          CanIsoNet offers two starting points to the user: <br>
+                          <br>
+                          <b>1)	Browse Cancer Type:</b> The user can find 24 cancer types to browse. In the table, the first column represents a PCAWG-Code used in the Pan-Cancer Analysis Whole Genome Project and the second column corresponds to the name of the cancer type. The third column indicates the data source (project). For now, the data presented in CanIsoNet is based on the PCAWG project. <br>
+                          <br>
+                          <b>2)	Browse a Genes & Isoforms:</b>  The user can search for a specific gene name or ENST id, or corresponding transcript name. Isoform search leads the user to the Transcript Page while gene search leads the user to the Gene page.<br>
+                          <br>
+                          <br>
+                          <b><u>Example Use Case: Browse Cancer Type</u></b>
+                          Click on any of the column to be directed into the cancer-based page (Figure A).
+                          <figure>
+                              <img src="{{ url_for('static', filename='images/help2.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                          </figure>
+                          <b>Cancer Based Page</b><br>
+                          <br>
+                          Browsing by cancer type directs users to a cancer-based page. This page presents three main findings:
+                          <br>
+                          <b>a.</b>	In the Figure B-left</b>, you will see frequencies of the top ten most common cMDTs, which represents the proportion of the transcripts occurence across cancer samples. Some cMDTs are found in every sample, which makes them potential biomarkers for that cancer type.  <br>
+                          <br>
+                          <b>b.</b>	In the Figure B-right</b>: you will find the distribution of cMDT counts across samples of the cancer type selected which is also presented as a table on the bottom table of the page.<br>
+                          <br>
+                          <b>c.</b>	In the table below the figures, the user can find all different isoforms found as cMDTs in the cancer type of interest. The user can search for a specific isoform or sample. <br>
+                          <br>
+                          <figure>
+                              <img src="{{ url_for('static', filename='images/help3.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                          </figure>
+                          <br>
+                          <b>Transcript Based Page</b><br>
+                          <br>
+                          The transcript based page contains the following information:
+                          <br>
+                          <b>a.</b>	STRING-based transcript interaction network <b>(Figure D)</b>:<br>
+                          -	Only ten interactions of the protein of interest are shown in the network. <br>
+                          -	Only interactions with a minimumSTRING interaction score of 900 are shown here. <br>
+                          -	The missing interactions upon isoform switching are shown as a thick black lines. The remaining interactions are seen as a thin grey lines. <br>
+                          -	Proteins found in the cancer gene census are highlighted in turquoise colours. <br>
+                          <br>
+                          <b>b.</b>Statistics on the cMDT <b>(Figure E-F)</b>: Number of missed and remaining interactions, network density score ( which estimates the density of interactions of a protein and its local neighborhood in the STRING interaction network), and cancer types where the transcript is found as cMDT.<br>
+                          <br>
+                          <b>c.</b><b>Figure G-top <b></b> shows the table that includes the sample-based information for the interactions lost upon isoform switching: which interactions are lost in which sample.<br>
+                          <br>
+                          <b>d.</b><b>Figure G-bottom</b></b>shows the table that includes the cancer census genes, included if an interaction with the protein of interest is lost upon isoform switching.<br>
+                          <br>
+                          <figure>
+                              <img src="{{ url_for('static', filename='images/help4.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                          </figure>
+                          <br>
+                          <b>Sample Based Page</b><br>
+                          <br>
+                          In sample based page, the user can see the MDT-cMDT switch in the corresponding sample. Here, we also show the TPM counts for the MDTs and cMDTs in cancer sample along with the average TPM counts of MDTs and cMDTs in normal samples <b>(Figure H)</b>.
+                          In addition, domain structure of MDT and cMDT are provided.
+                          <br>
+                          <br>
+                            <figure>
+                              <img src="{{ url_for('static', filename='images/help5.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                          </figure>
+                        </p>
+                      </div>
+                      <div class="tab-pane fade" id="v-pills-mdt" role="tabpanel" aria-labelledby="v-pills-mdt-tab">
                         <p> Under normal conditions, cells of almost all tissue types express the same predominant canonical transcript isoform at each gene locus (MDT). In cancer, however, splicing regulation is often disturbed, leading to a switch from
                             the most dominant transcripts (MDT) to a cancer-specific MDT (cMDT) (see Figure below). <br>
                             To understand to which extent of these switches occur, we have recenty analyzed isoform-specific protein–protein interaction disruptions in 1,209 cancer samples covering 27 different cancer
@@ -96,72 +157,55 @@
                         <br>
                         <br>
                         <p> The sample size used to assess cMDTs in PCAWG and GTEx as following:
-                            <!--  <figure>
-                                  <img src="{{ url_for('static', filename='images/samplesize.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
-                                  <figcaption class="figure-caption text-right"> The top plot shows the number of samples with RNAseq in PCAWG per cancer type colored according to PCAWG specifications. The bottom plot displays the number of samples per matched GTEx tissue type.
-                                  </figcaption>
-                              </figure> -->
                         </p>
                       </div>
+                        <div class="tab-pane fade" id="v-pills-faq" role="tabpanel" aria-labelledby="v-pills-faq-tab">
+                                <div id="accordion">
+                                  <div class="card">
+                                    <div class="card-header" id="Firstquestion">
+                                      <h5 class="mb-0">
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseFirst" aria-expanded="true" aria-controls="collapseFirst">
+                                          Why I can not find my protein/isoform of interest in the database?
+                                        </button>
+                                      </h5>
+                                    </div>
 
-                      <div class="tab-pane fade" id="v-pills-exp" role="tabpanel" aria-labelledby="v-pills-exp-tab">
-                        <p> <b><u> Starting Points at Home Page:</u></b><br>
-                          <br>
-                          CanIsoNet offers two starting points to the user: <br>
-                          <br>
-                          <b>1)	Browse Cancer Type:</b> The user can find 24 cancer types to browse. In the table, the first column represents a PCAWG-Code used in the Pan-Cancer Analysis Whole Genome Project and the second column corresponds to the name of the cancer type. The third column indicates the data source (project). For now, the data presented in CanIsoNet is based on the PCAWG project. <br>
-                          <br>
-                          <b>2)	Browse a Genes & Isoforms:</b>  The user can search for a specific gene name or ENST id, or corresponding transcript name. Isoforms/Transcripts presented here are the ones found as cancer-specific MDTs across different cancer types. If your gene or protein of interest is not in the list, it means it is not found as a cMDT in our analysis. This page leads the user to the Transcript Based Page.<br>
-                          <br>
-                          <br>
-                          <b><u>Example Use Case: Browse Cancer Type</u></b>
-                          Click on any of the column to be directed into the cancer-based page.
-                          <figure>
-                              <img src="{{ url_for('static', filename='images/help2.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
-                          </figure>
-                          <b>Cancer Based Page</b><br>
-                          <br>
-                          Browsing by cancer type directs users to a cancer-based page. This page presents three main findings:
-                          <br>
-                          <b>a.</b>	On the top-left figure <b>(C-left)</b>, you will see frequencies of the top ten most common cMDTs, which represents the proportion of the transcripts occurence across cancer samples. Some cMDTs are found in every sample, which makes them potential biomarkers for that cancer type.  <br>
-                          <br>
-                          <b>b.</b>	On the top-right figure <b>(C-right)</b>: you will find the distribution of cMDT counts across samples of the cancer type selected which is also presented as a table on the bottom table of the page.<br>
-                          <br>
-                          <b>c.</b>	In the table below the figures, the user can find all different isoforms found as cMDTs in the cancer type of interest. The user can search for a specific isoform or sample. <br>
-                          <br>
-                          <figure>
-                              <img src="{{ url_for('static', filename='images/help3.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
-                          </figure>
-                          <br>
-                          <b>Transcript Based Page</b><br>
-                          <br>
-                          The transcript based page contains the following information:
-                          <br>
-                          <b>a.</b>	STRING-based transcript interaction network <b>(F)</b>:<br>
-                          -	Only ten interactions of the protein of interest are shown in the network. <br>
-                          -	Only interactions with a minimumSTRING interaction score of 900 are shown here. <br>
-                          -	The missing interactions upon isoform switching are shown as a thick black lines. The remaining interactions are seen as a thin grey lines. <br>
-                          -	Proteins found in the cancer gene census are highlighted in turquoise colours. <br>
-                          <br>
-                          <b>b.</b>	Statistics on the cMDT <b>(G & H)</b>: Number of missed and remaining interactions, network density score ( which estimates the density of interactions of a protein and its local neighborhood in the STRING interaction network), and cancer types where the transcript is found as cMDT. <br>
-                          <br>
-                          <b>c.</b>	Table <b>(I)</b> includes the sample-based information for the interactions lost upon isoform switching: which interactions are lost in which sample. <br>
-                          <br>
-                          <b>d.</b>	Table <b>(J)</b> includes the cancer gene census genes, included if an interaction with the protein of interest is lost upon isoform switching. <br>
-                          <br>
-                          <figure>
-                              <img src="{{ url_for('static', filename='images/help4.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
-                          </figure>
-                          <br>
-                          <b>Sample Based Page</b><br>
-                          <br>
-                          In sample based page, the user can see the MDT-cMDT switch in the corresponding sample. Here, we also show the TPM counts for the MDTs and cMDTs in cancer sample along with the average TPM counts of MDTs and cMDTs in normal samples <b>(K)</b>.
-                          <br>
-                          <br>
-                            <figure>
-                              <img src="{{ url_for('static', filename='images/help5.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
-                          </figure>
-                        </p>
+                                    <div id="collapseFirst" class="collapse" aria-labelledby="Firstquestion" data-parent="#accordion">
+                                      <div class="card-body">
+                                        CanIsoNet currently only reports the genes and corresponding isoforms that have been detected as cancer-specific isoform in our analysis. If the protein/isoform of interest is not found in CanIsoNet, that means we do not see it as cancer-specific cMDT across 24 cancer types.
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="card">
+                                    <div class="card-header" id="Secondquestion">
+                                      <h5 class="mb-0">
+                                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseSecond" aria-expanded="false" aria-controls="collapseSecond">
+                                          I have found incorrect information/representation in the website. What should I do?
+                                        </button>
+                                      </h5>
+                                    </div>
+                                    <div id="collapseSecond" class="collapse" aria-labelledby="Secondquestion" data-parent="#accordion">
+                                      <div class="card-body">
+                                          We would like to hear them all! Please contact with us via tuelay.karakulak@usz.ch
+                                          We will get back to you as soon as possible :)
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="card">
+                                    <div class="card-header" id="Thirdquestion">
+                                      <h5 class="mb-0">
+                                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThird" aria-expanded="false" aria-controls="collapseThird">
+                                        Even though I see couple of interactions are seen to be lost in STRING interaction network, I can not see them in the tables. Why is that?
+                                        </button>
+                                      </h5>
+                                    </div>
+                                    <div id="collapseThird" class="collapse" aria-labelledby="Thirdquestion" data-parent="#accordion">
+                                      <div class="card-body">
+                                        In STRING network, we show the isoform specific interaction network where missing and remaining interactions are shown. However, tables show missing interactions if both partner is expressed in a specific cancer type. If proteins have not found in cancer samples (not expressed), we can not find them as interaction lost. Thus, they are not seen in the table.
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                       </div>
                       <div class="tab-pane fade" id="v-pills-acknow" role="tabpanel" aria-labelledby="v-pills-acknow-tab">
                         <p>
@@ -184,7 +228,7 @@
                             </li>
                             <br>
                             <li>
-                            CanIsoNet was built by using <a href="https://flask.palletsprojects.com/en/2.0.x/" target="_blank">Flask</a>, <a href="https://plotly.com" target="_blank">Plotly</a>, and <a href="https://getbootstrap.com" target="_blank">Bootstrap.</a>
+                            CanIsoNet was built by using <a href="https://flask.palletsprojects.com/en/2.0.x/" target="_blank">Flask</a>, <a href="https://plotly.com" target="_blank">Plotly</a>, and <a href="https://getbootstrap.com" target="_blank">Bootstrap.</a> Domain structures of transcripts were generated by using the <a href= "https://www.bioconductor.org/packages/devel/bioc/vignettes/wiggleplotr/inst/doc/wiggleplotr.html" target="_blank">wiggleplotr package</a>. Anatograms were generated by using the <a href="https://jespermaag.shinyapps.io/gganatogram/ " target="_blank">gganatogram Rshiny app.</a>
                             </li>
                             <br>
                             <li>
@@ -212,7 +256,7 @@
                   <p>Please contact via tuelay.karakulak@usz.ch.</p>
                   <hr class="my-4">
                   <h6>   Follow us:</h6>
-                  <p><a href="https://clinicalcompbio.org" target="_blank">Group Page</a></p>
+                  <p><a href="https://www.sib.swiss/abdullah-kahraman-group" target="_blank">Group Page</a></p>
               </div>
         </div>
       </div>

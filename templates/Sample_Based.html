@@ -35,8 +35,10 @@
                         Cancer Type: <span id="tissue"></span>
                         <br>
                         Sample ID: <span id="CancerSampleId"></span>
-                        <br>
-                        MDT:<a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ normal_trans_id }}">{{ normal_trans_id }}</a>
+                        <br>MDT:
+                        {% for value in normal_trans_id_dict %}
+                            <a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ normal_trans_id_dict[value] }}">{{ normal_trans_id_dict[value] }}</a>,
+                        {% endfor %}
                         <br>
                         cMDT:<a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ cancer_trans_id }}">{{ cancer_trans_id }}</a></h5>
                         <br>
@@ -74,7 +76,9 @@
                              <!-- <span id="normal_trans_id"></span> -->
                             <h6><b>Domain Structures of MDT and cMDT</b></h6>
                             <br>
-                            <img class="cancer_trans_id mx-auto d-block" id ="cancer_trans_id" src="xx.png" class="mx-auto d-block" style="max-width: 100%">
+                            <div id = "element">
+                            <img class="cancer_trans_id mx-auto d-block" id ="cancer_trans_id" class="mx-auto d-block" style="max-width: 100%">
+                            </div>
                         <br>
                         </div>
                     </div>
@@ -99,7 +103,10 @@
     </script>
     <script>
         window.onload = function() {
-            normal_trans_id = '{{ normal_trans_id }}'
+            //normal_trans_id = '{{ normal_trans_id }}'
+
+            normal_trans_id_list = JSON.parse('{{ normal_trans_id_list | tojson }}');
+
             cancer_trans_id = '{{ cancer_trans_id }}'
 
             url = new URL(window.location.href)
@@ -107,14 +114,33 @@
             genename = url.searchParams.get("gene")
             tissuetype = url.searchParams.get("tissue")
 
-            //document.getElementById('normal_trans_id').innerHTML = normal_trans_id;
             document.getElementById('cancer_trans_id').innerHTML = cancer_trans_id;
 
             //var image = document.getElementsByClassName("cancer_trans_id")[0]
             // image.src = "static/images/" + cancer_trans_id.toUpperCase() + ".png"
+           // var img = document.getElementsByClassName("cancer_trans_id")[0]
 
-            var image = document.getElementsByClassName("cancer_trans_id")[0]
-            image.src = "static/images/divide_files/" + CanSampleId + genename + "-fs8.png"
+            var image_src_arrays = [];
+
+           // var img = document.createElement("img")
+            for(i = 0; i < normal_trans_id_list.length; i++) {
+
+                normal_trans_id = normal_trans_id_list[i]
+
+                //img.src = "static/images/cmdt_gtex_swicth/" +  cancer_trans_id + "_" + normal_trans_id + ".png"
+                var src = "static/images/cmdt_gtex_swicth/" +  cancer_trans_id + "_" + normal_trans_id + ".png";
+                image_src_arrays.push(src);
+                //var src = document.getELementById("cancer_trans_id")
+            };
+
+            for (i = 0; image_src_arrays.length > i; i++) {
+                 var img = new Image(900, 200)
+                //var img = document.createElement("img")
+                 img.src = image_src_arrays[i]
+                 var src = document.getElementById("element")
+                 src.appendChild(img)
+
+            };
 
             // var image_normal = document.getElementsByClassName("normal_trans_id")[0]
           //  var image_normal = document.getElementsByClassName("normal_trans_id")[0]

@@ -13,6 +13,7 @@ import yaml
 
 app = Flask(__name__)
 
+
 db = yaml.load(open('/home/abxka/CanIsoNet_Web/db.yaml'), Loader=yaml.FullLoader)
 app.config['MYSQL_DATABASE_HOST'] = db['mysql_host']
 app.config['MYSQL_DATABASE_USER'] = db['mysql_user']

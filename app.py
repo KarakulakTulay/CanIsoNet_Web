@@ -10,7 +10,6 @@ import functools
 import operator
 import statistics
 import yaml
-#from flask_paginate import Pagination, get_page_parameter
 
 app = Flask(__name__)
 

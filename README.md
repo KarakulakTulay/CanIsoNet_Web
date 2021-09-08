@@ -1,5 +1,5 @@
 # CanIsoNet
-![Image for repository](https://github.com/KarakulakTulay/CanIsoNet_Web/static/blob/master/images/github-logo.png)
+![Image for repository](https://github.com/KarakulakTulay/CanIsoNet_Web/blob/master/static/images/github-logo.png)
 We have recently analyzed the pathogenic impact of isoform switching events in 1209 cancer samples covering 27 different cancer types. Expanding on those results, we have built a user-friendly Cancer Isoform Specific Interaction Network (CanIsoNet) database to make our results more accessible to the cancer research community.
 CanIsoNet is the first webserver that merges isoform switching events in different cancer types with their functional impact level and showing them on STRING interaction network.
 It holds annotations for 7144 genes, 11,041 isoforms and 31,748 unique isoform switching events across 24 cancer types.

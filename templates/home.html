@@ -28,38 +28,6 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script> -->
 </head>
 <body>
-    <style>
-        .ui-autocomplete {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          z-index: 1000;
-          display: none;
-          float: left;
-          min-width: 160px;
-          padding: 5px 0;
-          margin: 2px 0 0;
-          list-style: none;
-          font-size: 14px;
-          text-align: left;
-          background-color: #ffffff;
-          border: 1px solid #cccccc;
-          border: 1px solid rgba(0, 0, 0, 0.15);
-          border-radius: 4px;
-          -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-          background-clip: padding-box;
-        }
-        .ui-autocomplete > li > div {
-          display: block;
-          padding: 3px 20px;
-          clear: both;
-          font-weight: normal;
-          line-height: 1.42857143;
-          color: #333333;
-          white-space: nowrap;
-        }
-    </style>
     {% extends "template.html" %} {% block content %}
     <div class="container">
       <br>
@@ -86,7 +54,7 @@
                     <a href="#" class="example">#1</a>
                     <a href="#" class="example">#2</a>
                 </div>
-                <input type="text" class="form-control  form-control-lg" id="genetakeinput" placeholder="Type a Gene Name" required/>
+                <input type="text" class="form-control  form-control-lg ui-autocomplete-input" autocomplete="off" id="genetakeinput" placeholder="Type a Gene Name" required/>
                 <br>
                 <input value="Go" class="fbutton" type="submit" onClick="GeneFunction()"/>
                 </form>
@@ -102,7 +70,7 @@
                              <a href="#" class="example">#1</a>
                              <a href="#" class="example">#2</a>
                          </div>
-                         <input type="text" class="form-control form-control-lg" id="isotakeinput" placeholder="Type an Isoform Name" required/>
+                         <input type="text" class="form-control form-control-lg ui-autocomplete-input" autocomplete="off" id="isotakeinput" placeholder="Type an Isoform Name" required/>
                         <br>
                         <input value="Go" class="fbutton" type="submit" onClick="isoformFunction()"/>
                         </form>
@@ -216,32 +184,11 @@
                   });
           });
         </script>
-         <script>
-         // $('#gene2takeinput').change(function() {
-         //   availableTags4 = JSON.parse('{{ temp_dict | tojson  }}')
-         //   availableTags6 = []
-         //   availableTags7 = []
-         //   availableTags8 = []
-         //   availableTags5 = availableTags4.filter(function (element) { return element.GeneName1_x == document.getElementById('gene2takeinput').value })
-         //   for (i = 0; i < availableTags5.length; i++){
-         //       //availableTags6[i] = availableTags5[i]['DomCancerTrans']
-         //       availableTags6.push(availableTags5[i]['Transcript_Name'])
-         //       availableTags6.push(availableTags5[i]['DomCancerTrans'])
-         //       //console.log(availableTags6)
-         //   }
-         //         $( "#isotakeinput" ).autocomplete({
-         //           source: availableTags6
-         //         });
-         // });
-        </script>
         <script>
-            // Example starter JavaScript for disabling form submissions if there are invalid fields
             (function() {
               'use strict';
               window.addEventListener('load', function() {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
                 var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
                 var validation = Array.prototype.filter.call(forms, function(form) {
                   form.addEventListener('submit', function(event) {
                     if (form.checkValidity() === false) {
@@ -258,11 +205,8 @@
                 $(document).ready(function(){
                 	$("#isoform_return a").click(function(){
                 		var value = $(this).html();
-                		//if (value == '#1') {var new_value = 'BRCA1'} else {var new_value = 'CASP10'};
                 		if (value == '#1') {var new_value_iso = 'BRCA1-201'} else {var new_value_iso = 'ENST00000374650'};
-                       // var input = $('#gene2takeinput');
                         var input2 = $('#isotakeinput');
-                    //    input.val(new_value);
                         input2.val(new_value_iso);
                 	});
                 });

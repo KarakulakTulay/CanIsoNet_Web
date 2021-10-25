@@ -144,8 +144,6 @@ def CancerSpecific(SampleCancerType):
     cur.execute(sql,adr)
     TableS4_tuple = cur.fetchall()
     result = pd.DataFrame(TableS4_tuple, columns=['cMDT','Frequency','CancerType', 'Transcript_Name'])
-    #result = TableS4.rename(columns={'Associated Transcript Name':'Transcript_Name'})
-    #result = TableS4_new.sort_values(by=['Frequency'],ascending=False).iloc[0:10,:]
 
     cur2 = mysql.get_db().cursor()
     sql2 = ''' SELECT CancerType, SampleID, NumberOfMDTs  FROM mdts_vs_muts WHERE CancerType = %s '''
@@ -274,7 +272,8 @@ def Transcript():
         ## end of PIE CHART
         ## Take missed interactions for the interested ENST id from the missed_interactions table from mysqldb
         cur3 = mysql.get_db().cursor()
-        sql3 = ''' SELECT ENSG, ENSP, ENST, MissInts FROM missed_interactions WHERE ENST = %s '''
+        #sql3 = ''' SELECT ENSG, ENSP, ENST, MissInts FROM missed_interactions WHERE ENST = %s '''
+        sql3 = ''' SELECT ENSG, ENSP, ENST, MissInts FROM interactionsinisoforms WHERE ENST = %s '''
         adr3 = (enstid,)
         cur3.execute(sql3, adr3)
         missed_interactions_tuple = cur3.fetchall()
@@ -299,20 +298,6 @@ def Transcript():
         ensp_frame = functools.reduce(operator.iconcat, ensp_frame, [])
 
         partner_genenames = []
-        #cgc_partners = []
-        #cur_ensp = mysql.get_db().cursor()
-        #for eachpartner in ensp_frame:
-        #    try:
-        #        cur_ensp_sql = '''SELECT ENSPid, GeneName  FROM ensg_enst_ensp_des WHERE ENSPid = %s '''
-        #        adr_ensp = (eachpartner,)
-        #        cur_ensp.execute(cur_ensp_sql, adr_ensp)
-        #        ensp_tuple = cur_ensp.fetchall()
-        #        ensp_genename = pd.DataFrame(ensp_tuple, columns=['ENSPid', 'GeneName'])
-        #        partner_genenames.append(list(ensp_genename['GeneName']))
-        #        #genenames = ensp_genename_dict['GeneName'][eachpartner]
-        #        #partner_genenames.append(genenames)
-        #    except:
-        #        pass
 
         try:
             placeholders = ','.join(['%s'] * len(ensp_frame))
@@ -326,18 +311,13 @@ def Transcript():
 
         cgc_partners = [eachpartner for eachpartner in partner_genenames if eachpartner in df_cgc_list]
 
-        #for eachpartner in partner_genenames:
-        #    if eachpartner in df_cgc_list:
-        #        cgc_partners.append(eachpartner)
 
         cgc_partners_df = pd.DataFrame({'GeneName':cgc_partners})
         df_cgc_dict  = cgc_partners_df.drop_duplicates().to_dict(orient='records')
 
-        #return render_template('network_lochen.html', genename=genename, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, df_cgc_list=df_cgc_list, result=result, cgc=df_cgc_dict, df_cgc_all_dict=df_cgc_all_dict, graphJSON2=graphJSON2)
     return render_template('network.html', string_score=string_score, transcript_name=transcript_name, genename=genename, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, df_cgc_list=df_cgc_list, cgc=df_cgc_dict, graphJSON2=graphJSON2)
 
 
-    ### Gene Based
 
 @app.route("/Gene", methods=['GET', 'POST'])
 def Gene():
@@ -460,18 +440,6 @@ def update_fig(CancerSampleId, genename, tissue):
             else:
                 continue
 
-#    normal_trans_id = normal_trans_ids.iloc[0,0] # Normal Transcript Id
-
-    #list of normal trans id
-
-    #gtex = '_gtex'
-    #my_tissue = tissuetype+gtex
-    #gtex_cur_normal = mysql.get_db().cursor()
-    #gtex_sql_normal = ''' SELECT * FROM ''' + my_tissue + ''' WHERE Feature REGEXP %s '''
-    #gtex_adr_normal = (normal_trans_id,)
-    #gtex_cur_normal.execute(gtex_sql_normal, gtex_adr_normal)
-    #df_gtex_tuple = gtex_cur_normal.fetchall()
-    #df_gtex_normal = pd.DataFrame(df_gtex_tuple)
 
     # extract normal transcripts expressions from gtex data - it can be more than 1 transcript
     gtex = '_gtex'
@@ -501,15 +469,9 @@ def update_fig(CancerSampleId, genename, tissue):
     pcawg = '_pcawg'
     my_tissue2 = tissuetype + pcawg
 
-    #pcawg_cur_normal = mysql.get_db().cursor()
-    #pcawg_sql_normal = ''' SELECT Feature, ''' +  '''`''' + CancerSampleId + '''`'''  + ''' FROM ''' + my_tissue2 + ''' WHERE Feature REGEXP %s '''
-    #pcawg_adr_normal = (normal_trans_id,)
-    #pcawg_cur_normal.execute(pcawg_sql_normal, pcawg_adr_normal)
-    #df_pcawg_tuple = pcawg_cur_normal.fetchall()
-    #df_pcawg_normal = pd.DataFrame(df_pcawg_tuple)
 
     #extract normal transcripts expressions from pcawg data - it can be more than 1 transcript
-    #placeholders = '|'.join(['%s'] * len(normal_trans_id_list))
+
     pcawg_cur_normal = mysql.get_db().cursor()
     df_pcawg_normal = pd.DataFrame()
     for eachtranscript in normal_trans_id_list:

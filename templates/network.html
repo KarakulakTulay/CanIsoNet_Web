@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/amblem.png') }}">
 
-    <script type="text/javascript" src="https://string-db.org/javascript/combined_embedded_network_v2.0.2.js"></script>
+    <script type="text/javascript" src="https://version-11-5.string-db.org/javascript/combined_embedded_network_v2.0.3.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -58,10 +58,13 @@
                   <i class="fas fa-chart-bar mr-1"></i> ENST Interaction Network
               </div>
             <div class="card-body">
-                <div id="stringEmbedded"></div>
+              <!--  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="395" height="305" viewBox="0 0 395 305" class="shadow"> -->
+                  <div id="stringEmbedded"></div>
                     <figure>
                         <img src="{{ url_for('static', filename='images/signs2.png')}}" class="figure-img img-fluid rounded" style="max-width: 30%">
                     </figure>
+                    <line x1=x1 y1=y1 x2=x2 y2=y2 stroke-width="1" class="line"/>
+               <!-- </svg> -->
             </div>
         </div>
       </div>
@@ -111,7 +114,7 @@
         <div  class="jumbotron">
         <div class="content">
             <div align="center">
-                <h4 class= "featurette-heading">Network Density Score: %<span id="string_score"></span> <span class = "text-muted"></span> </h4>
+                <h4 class= "featurette-heading">Network Density Score: <span id="string_score"></span>% <span class = "text-muted"></span> </h4>
                 <h6> Network Density Score corresponds to the density of STRING interactions in the local neighborhood of a protein. </h6>
             </div>
         </div>
@@ -235,15 +238,33 @@
 
            var protein = text.split(' ');
 
-           getSTRING('https://string-db.org', {
+           partner_genenames_missed = JSON.parse('{{ partner_genenames | tojson  }}');
+          // ensp_frame_exists = JSON.parse('{{ ensp_frame_exists | tojson  }}');
+          // consol.log(ensp_frame_exists)
+           partner_genenames_exists = JSON.parse('{{ partner_genenames_exists | tojson  }}');
+
+           partner_genenames_missed.push(protein)
+           partner_genenames_missed.push.apply(partner_genenames_missed,partner_genenames_exists)
+
+
+           if (partner_genenames_missed.length > 20) {
+               partner_genenames_missed = JSON.parse('{{ partner_genenames | tojson  }}');
+               partner_genenames_missed.push(protein)
+               partner_genenames_missed.push.apply(partner_genenames_missed,partner_genenames_exists.slice(0, 10))
+           }
+
+           getSTRING('https://version-11-5.string-db.org', {
                'species': '9606',
-               'identifiers': protein,
+               //'identifiers': protein,
+               'identifiers':  partner_genenames_missed,
                'network_flavor': 'confidence',
                'caller_identity': 'www.amazing_network_app.org',
-               'required_score':900,
-               'add_nodes':10
+               'required_score':0,
+               //'add_nodes':15
+               'add_white_nodes':0
            })
        }
+
 
         var cgc_array = [];
         function isonet() {
@@ -261,7 +282,7 @@
 
             //var storedNames = JSON.parse(localStorage.getItem("nodenames"));
             partner_genenames = JSON.parse('{{ partner_genenames | tojson  }}');
-            ensp_frame = JSON.parse('{{ partner_genenames | tojson  }}');
+            // ensp_frame = JSON.parse('{{ partner_genenames | tojson  }}');
 
             df_cgc_list = JSON.parse('{{ df_cgc_list | tojson  }}');
 
@@ -273,8 +294,16 @@
 
                 if (geneName == genename_searched) {
                     geneid_searched = protein_nodes[i].getAttribute('id').split(".").pop()
+
+                    pos_gene_id_searched_x = protein_nodes[i].getAttribute('data-x_pos')
+                    pos_gene_id_searched_y = protein_nodes[i].getAttribute('data-y_pos')
+                } else {
+                    pos_partner_id_x = protein_nodes[i].getAttribute('data-x_pos')
+                    pos_partner_id_y = protein_nodes[i].getAttribute('data-y_pos')
                 };
             }
+
+
 
             for (k = 0; k < partner_genenames.length; k++) {
 
@@ -286,11 +315,17 @@
 
                     if (partner_name == geneName) {
                         partner_id = protein_nodes[j].getAttribute('id').split(".").pop()
-
+                        pos_partner_id_x = protein_nodes[j].getAttribute('data-x_pos')
+                        pos_partner_id_y = protein_nodes[j].getAttribute('data-y_pos')
 
                     } else {
                         continue;
                     }
+
+                    //document.getElementById('x1').innerHTML = pos_partner_id_x;
+                    //document.getElementById('y1').innerHTML = pos_partner_id_y;
+                    //document.getElementById('x2').innerHTML = pos_gene_id_searched_x;
+                    //document.getElementById('y2').innerHTML = pos_gene_id_searched_y;
 
 
                     var elem = document.getElementById('line' + '.' + geneid_searched + '.' + partner_id + '.' + '0')
@@ -306,6 +341,7 @@
                         elem1.setAttribute('stroke', 'rgb(0,0,0)')
                         elem1.setAttribute('stroke-opacity', '1')
                         elem1.setAttribute('stroke-width', '10')
+
                     };
 
                     if (elem2 !== null) {
@@ -325,32 +361,42 @@
 
             var object = {};
             //var cgc_array = [];
+
+            for (j = 0; j < protein_nodes.length; j++) {
+
+                  geneName = protein_nodes[j].getAttribute('data-safe_div_label')
+
+                  document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(255,255,255)')
+
+            }
+
+
             for (j = 0; j < protein_nodes.length; j++) {
 
                   geneName = protein_nodes[j].getAttribute('data-safe_div_label')
 
                   for(i = 0; i < df_cgc_list.length; i++) {
 
-                  cgc_name = df_cgc_list[i]
+                      cgc_name = df_cgc_list[i]
 
+                      if (cgc_name == geneName) {
 
-                  if (cgc_name == geneName) {
+                        document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(0,255,255)');
+                        //cgc_array.push(cgc_name);
+                      } //else {
+                         //continue;
+                        //document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(255,255,255)');
+                     // };
 
-                    document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(0,255,255)');
-                    cgc_array.push(cgc_name);
+                      //if (cgc_name == genename_searched) {
 
+                       // document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(255,0,0)');
+                      //}
+                    }
+
+                if (geneName == genename_searched) {
+                      document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(255,0,0)');
                   }
-
-                  else {
-                     continue;
-                  };
-
-                  if (cgc_name == genename_searched) {
-
-                    document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(255,0,0)');
-                  }
-
-                }
             }
         }
     </script>

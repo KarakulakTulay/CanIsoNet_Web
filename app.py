@@ -6,15 +6,12 @@ import pandas as pd
 import numpy as np
 import json
 from flaskext.mysql import MySQL
-import functools
-import operator
 import statistics
 import yaml
 
 app = Flask(__name__)
 
-
-db = yaml.load(open('/home/abxka/CanIsoNet_Web/db.yaml'), Loader=yaml.FullLoader)
+db = yaml.load(open('/home/abxka/canisonet_development/db.yaml'), Loader=yaml.FullLoader)
 app.config['MYSQL_DATABASE_HOST'] = db['mysql_host']
 app.config['MYSQL_DATABASE_USER'] = db['mysql_user']
 app.config['MYSQL_DATABASE_PASSWORD'] = db['mysql_password']
@@ -30,7 +27,6 @@ def home():
     cur.execute('''SELECT * FROM cancertypesinproject''')
     cancer_types = cur.fetchall()
     cancertypes = pd.DataFrame(cancer_types,columns=['PCAWG-Code', 'Cancer Type Name', 'PCAWG_GTEx'])
-   # cancertypes_dict = list(cancertypes.iloc[:,2])
     cancertypes_dict = cancertypes.to_dict(orient='records')
 
     cur2 = mysql.get_db().cursor()
@@ -59,19 +55,7 @@ def cspec_cMDTs():
     temp_dict = result2.to_dict(orient='record')
 
     return render_template('cspec_cMDTs.html', temp_dict=temp_dict)
-#
-#@app.route("/fre_cMDTs")
-#def fre_cMDTs():
-#
-#    cur = mysql.get_db().cursor()
-#    cur.execute(''' SELECT cMDT, Frequency, CancerType, mart_export.`Associated Transcript Name` FROM tables4 LEFT JOIN mart_export ON tables4.cMDT = mart_export.`Ensembl Transcript ID` ORDER BY Frequency DESC''')
-#    TableS4_tuple = cur.fetchall()
-#    result = pd.DataFrame(TableS4_tuple, columns=['cMDT','Frequency','CancerType', 'Transcript_Name'])
-#    temp_dict = result.to_dict(orient='record')
-#
-#
-#    return render_template('fre_cMDTs.html', temp_dict=temp_dict)
-#
+
 
 @app.route("/download", methods=['GET', 'POST'])
 def download():
@@ -273,7 +257,7 @@ def Transcript():
         ## Take missed interactions for the interested ENST id from the missed_interactions table from mysqldb
         cur3 = mysql.get_db().cursor()
         #sql3 = ''' SELECT ENSG, ENSP, ENST, MissInts FROM missed_interactions WHERE ENST = %s '''
-        sql3 = ''' SELECT ENSG, ENSP, ENST, MissInts FROM interactionsinisoforms WHERE ENST = %s '''
+        sql3 = ''' SELECT ENSG, ENSP, ENST, MissInts FROM interactionsinisoforms_900 WHERE ENST = %s '''
         adr3 = (enstid,)
         cur3.execute(sql3, adr3)
         missed_interactions_tuple = cur3.fetchall()
@@ -284,6 +268,18 @@ def Transcript():
         ENSP_list = list()
         ensp_frame = list()
 
+        ## take existing interactions for the interested ENST id from the missed_interactions table from mysqldb
+        cur_ext_int = mysql.get_db().cursor()
+        #sql3 = ''' SELECT ENSG, ENSP, ENST, ExistInts FROM missed_interactions WHERE ENST = %s '''
+        sql_ext_int = ''' SELECT ENSG, ENSP, ENST, ExistInts FROM interactionsinisoforms_900 WHERE ENST = %s '''
+        adr_ext_int = (enstid,)
+        cur_ext_int.execute(sql_ext_int, adr_ext_int)
+        exist_interactions_tuple = cur_ext_int.fetchall()
+        exist_interactions = pd.DataFrame(exist_interactions_tuple, columns=['ENSG', 'ENSP', 'ENST', 'ExistInts'])
+        Isoform_Int_Network_splitted_exists = pd.DataFrame(exist_interactions.ExistInts.str.split(':').tolist())
+        #Isoform_Int_Network_exists = pd.concat([exist_interactions, Isoform_Int_Network_splitted_exists], axis=1)
+
+
         for eachcolumn in range(3, len(Isoform_Int_Network.iloc[0,:])):
             Isoform_Int_Network.iloc[0,eachcolumn] = str(Isoform_Int_Network.iloc[0,eachcolumn])
 
@@ -293,9 +289,32 @@ def Transcript():
             else:
                 continue
 
-            ensp_frame.append(ENSP_list)
+            #ensp_frame.append(ENSP_list)
 
-        ensp_frame = functools.reduce(operator.iconcat, ensp_frame, [])
+        #ensp_frame = functools.reduce(operator.iconcat, ensp_frame, [])
+        ensp_frame = ENSP_list
+
+        ## for the existing ints
+        ensp_frame_exists = list()
+        ENSP_list_exists = list()
+
+        #for eachcolumn in range(3, len(Isoform_Int_Network_exists.iloc[0,:])):
+        #    Isoform_Int_Network_exists.iloc[0,eachcolumn] = str(Isoform_Int_Network_exists.iloc[0,eachcolumn])
+
+        #    if "ENSP" in Isoform_Int_Network_exists.iloc[0,eachcolumn]:
+        #        ENSP_list_exists.append(Isoform_Int_Network_exists.iloc[0,eachcolumn])
+        #    else:
+        #        continue
+
+        for eachcolumn in range(3, len(Isoform_Int_Network_splitted_exists.iloc[0,:])):
+            Isoform_Int_Network_splitted_exists.iloc[0,eachcolumn] = str(Isoform_Int_Network_splitted_exists.iloc[0,eachcolumn])
+
+            if "ENSP" in Isoform_Int_Network_splitted_exists.iloc[0,eachcolumn]:
+                ENSP_list_exists.append(Isoform_Int_Network_splitted_exists.iloc[0,eachcolumn])
+            else:
+                continue
+
+        ensp_frame_exists = ENSP_list_exists
 
         partner_genenames = []
 
@@ -309,13 +328,24 @@ def Transcript():
         except:
             pass
 
+        partner_genenames_exists = []
+
+        try:
+            placeholders = ','.join(['%s'] * len(ensp_frame_exists))
+            cur_ensp_exists = mysql.get_db().cursor()
+            cur_ensp_exists.execute('''SELECT ENSPid, GeneName  FROM ensg_enst_ensp_des WHERE ENSPid IN (%s)'''%placeholders, tuple(ensp_frame_exists))
+            ensp_tuple_exists = cur_ensp_exists.fetchall()
+            ensp_genename_exists = pd.DataFrame(ensp_tuple_exists, columns=['ENSPid', 'GeneName'])
+            partner_genenames_exists = list(ensp_genename_exists['GeneName'])
+        except:
+            pass
+
+
         cgc_partners = [eachpartner for eachpartner in partner_genenames if eachpartner in df_cgc_list]
-
-
         cgc_partners_df = pd.DataFrame({'GeneName':cgc_partners})
         df_cgc_dict  = cgc_partners_df.drop_duplicates().to_dict(orient='records')
 
-    return render_template('network.html', string_score=string_score, transcript_name=transcript_name, genename=genename, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, df_cgc_list=df_cgc_list, cgc=df_cgc_dict, graphJSON2=graphJSON2)
+    return render_template('network.html', ensp_frame_exists=ensp_frame_exists, string_score=string_score, partner_genenames_exists=partner_genenames_exists, transcript_name=transcript_name, genename=genename, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, df_cgc_list=df_cgc_list, cgc=df_cgc_dict, graphJSON2=graphJSON2)
 
 
 
@@ -369,7 +399,73 @@ def Gene():
     data.update_layout(title=" Gene Name: {} ".format(genename), showlegend=False, title_font_size=24)
     graphJSON2 = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
 
-    return render_template('GeneBased.html', string_score=string_score, df_cgc_list=df_cgc_list, genename=genename, data=data_dict, data_statistics = statistics_table_dict, result=result, graphJSON2=graphJSON2)
+    # take missed interactions from the db
+    ensg = df.iloc[0,1]
+    cur3 = mysql.get_db().cursor()
+    sql3 = ''' SELECT ENSG, ENSP, ENST, ExistInts, MissInts FROM interactionsinisoforms_900 WHERE ENSG = %s LIMIT 1'''
+    adr3 = (ensg,)
+    cur3.execute(sql3, adr3)
+    missed_interactions_tuple = cur3.fetchall()
+    missed_interactions = pd.DataFrame(missed_interactions_tuple, columns=['ENSG', 'ENSP', 'ENST', 'ExistsInts', 'MissInts'])
+    Isoform_Int_Network_splitted = pd.DataFrame(missed_interactions.MissInts.str.split(':').tolist())
+    #Isoform_Int_Network = pd.concat([missed_interactions, Isoform_Int_Network_splitted], axis=1)
+
+    Isoform_Int_Network_splitted_exists = pd.DataFrame(missed_interactions.ExistsInts.str.split(':').tolist())
+    #Isoform_Int_Network_exists = pd.concat([missed_interactions, Isoform_Int_Network_splitted_exists], axis=1)
+
+    ENSP_list = list()
+    ensp_frame = list()
+
+
+    for eachcolumn in range(4, len(Isoform_Int_Network_splitted.iloc[0,:])):
+        Isoform_Int_Network_splitted.iloc[0,eachcolumn] = str(Isoform_Int_Network_splitted.iloc[0,eachcolumn])
+
+        if "ENSP" in Isoform_Int_Network_splitted.iloc[0,eachcolumn]:
+            ENSP_list.append(Isoform_Int_Network_splitted.iloc[0,eachcolumn])
+
+        else:
+            continue
+
+    ensp_frame = ENSP_list
+    ensp_frame_exists = list()
+    ENSP_list_exists = list()
+
+
+    for eachcolumn in range(3, len(Isoform_Int_Network_splitted_exists.iloc[0,:])):
+        Isoform_Int_Network_splitted_exists.iloc[0,eachcolumn] = str(Isoform_Int_Network_splitted_exists.iloc[0,eachcolumn])
+
+        if "ENSP" in Isoform_Int_Network_splitted_exists.iloc[0,eachcolumn]:
+            ENSP_list_exists.append(Isoform_Int_Network_splitted_exists.iloc[0,eachcolumn])
+        else:
+            continue
+
+    ensp_frame_exists = ENSP_list_exists
+
+    partner_genenames = []
+
+    try:
+        placeholders = ','.join(['%s'] * len(ensp_frame))
+        cur_ensp = mysql.get_db().cursor()
+        cur_ensp.execute('''SELECT ENSPid, GeneName  FROM ensg_enst_ensp_des WHERE ENSPid IN (%s)'''%placeholders, tuple(ensp_frame))
+        ensp_tuple = cur_ensp.fetchall()
+        ensp_genename = pd.DataFrame(ensp_tuple, columns=['ENSPid', 'GeneName'])
+        partner_genenames = list(ensp_genename['GeneName'])
+    except:
+        pass
+
+    partner_genenames_exists = []
+
+    try:
+        placeholders = ','.join(['%s'] * len(ensp_frame_exists))
+        cur_ensp_exists = mysql.get_db().cursor()
+        cur_ensp_exists.execute('''SELECT ENSPid, GeneName  FROM ensg_enst_ensp_des WHERE ENSPid IN (%s)'''%placeholders, tuple(ensp_frame_exists))
+        ensp_tuple_exists = cur_ensp_exists.fetchall()
+        ensp_genename_exists = pd.DataFrame(ensp_tuple_exists, columns=['ENSPid', 'GeneName'])
+        partner_genenames_exists = list(ensp_genename_exists['GeneName'])
+    except:
+        pass
+
+    return render_template('GeneBased.html', genename=genename, partner_genenames_exists=partner_genenames_exists, partner_genenames=partner_genenames, string_score=string_score, df_cgc_list=df_cgc_list, data=data_dict, data_statistics = statistics_table_dict, result=result, graphJSON2=graphJSON2)
 
 
 

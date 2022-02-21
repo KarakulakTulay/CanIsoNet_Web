@@ -12,7 +12,7 @@
       gtag('config', 'G-XMXDYWMED4');
     </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/spacelab/bootstrap.min.css" integrity="sha384-F1AY0h4TrtJ8OCUQYOzhcFzUTxSOxuaaJ4BeagvyQL8N9mE4hrXjdDsNx249NpEc" crossorigin="anonymous">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/amblem.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
 
@@ -27,7 +27,7 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background-color: #e3f2fd;">
-            <a class="navbar-brand" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/amblem.png')}}" class="center size-medium" style="max-width: 8%"> CanIsoNet beta-version </a>
+            <a class="navbar-brand" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/logo.png')}}" class="center size-medium" style="max-width: 8%"> CanIsoNet beta-version </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -48,6 +48,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('download') }}">Download</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('upload') }}">Upload Data</a>
                     </li>
                 </ul>
             </div>

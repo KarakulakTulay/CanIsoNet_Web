@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/amblem.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}">
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
@@ -35,12 +35,12 @@
                 <div class="content">
                   <div align="center" width="700px">
                   <h2 class= "featurette-heading">
-                     CanIsoNet: <span class = "text-muted"> Cancer-specific Isoform Interaction Network </span>
-                     <h6> CanIsoNet serves as a gateway to understand the functional role of cancer-specific isoform switching events. We provide two main functionalities for the users:
+                     CanIsoNet: <span class = "text-muted"> Disease-specific Isoform Interaction Network </span>
+                     <h6> CanIsoNet serves as a gateway to understand the functional role of disease-specific isoform switching events. We provide two main functionalities for the users:
                      <br>
-                       1. Browsing various statistics on cancer-specific isoform switching events in each of the 1209 cancer samples from the Pan-Cancer Analysis of Whole Genomes (PCAWG) project
+                       1. Browsing various statistics on disease-specific isoform switching events
                       <br>
-                       2. Exploring and visualising isoform-specific network disruptions in the STRING interaction network. </h6>
+                       2. Exploring and visualising isoform-specific network disruptions in the STRING interaction network </h6>
                     </div>
                 </div>
             </div>
@@ -80,19 +80,19 @@
                           <br>
                           CanIsoNet offers two starting points to the user: <br>
                           <br>
-                          <b>1)	Browse Cancer Type:</b> The user can find 24 cancer types to browse. In the table, the first column represents a PCAWG-Code used in the Pan-Cancer Analysis Whole Genome Project and the second column corresponds to the name of the cancer type. The third column indicates the data source (project). For now, the data presented in CanIsoNet is based on the PCAWG project. <br>
+                          <b>1)	Browse Disease Type:</b> The user can find 25 disease types to browse. In the table, the first column represents a PCAWG-Code used in the Pan-Cancer Analysis Whole Genome Project for 24 cancer types and one BioProject Accession Number for OIH. The second column corresponds to the name of the disease type. The third column indicates the data source (project). <br>
                           <br>
                           <b>2)	Browse a Genes & Isoforms:</b>  The user can search for a specific gene name or ENST id, or corresponding transcript name. Isoform search leads the user to the Transcript Page while gene search leads the user to the Gene page.<br>
                           <br>
                           <br>
-                          <b><u>Example Use Case: Browse Cancer Type</u></b>
-                          Click on any of the column to be directed into the cancer-based page (Figure A).
+                          <b><u>Example Use Case: Browse Disease Type</u></b>
+                          Click on any of the column to be directed into the disease page (Figure A).
                           <figure>
-                              <img src="{{ url_for('static', filename='images/help2.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                              <img src="{{ url_for('static', filename='images/Help_FigureA.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
                           </figure>
-                          <b>Cancer Based Page</b><br>
+                          <b>Disease Page</b><br>
                           <br>
-                          Browsing by cancer type directs users to a cancer-based page. This page presents three main findings:
+                          Browsing by disease type directs users to a disease page. This page presents three main findings:
                           <br>
                           <b>a.</b>	In the Figure B-left</b>, you will see frequencies of the top ten most common cMDTs, which represents the proportion of the transcripts occurence across cancer samples. Some cMDTs are found in every sample, which makes them potential biomarkers for that cancer type.  <br>
                           <br>
@@ -101,37 +101,36 @@
                           <b>c.</b>	In the table below the figures, the user can find all different isoforms found as cMDTs in the cancer type of interest. The user can search for a specific isoform or sample. <br>
                           <br>
                           <figure>
-                              <img src="{{ url_for('static', filename='images/help3.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                              <img src="{{ url_for('static', filename='images/Help_FigureB_C.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
                           </figure>
                           <br>
-                          <b>Transcript Based Page</b><br>
+                          <b>Transcript Page</b><br>
                           <br>
-                          The transcript based page contains the following information:
+                          The transcript page contains the following information:
                           <br>
                           <b>a.</b>	STRING-based transcript interaction network <b>(Figure D)</b>:<br>
-                          -	Only ten interactions of the protein of interest are shown in the network. <br>
-                          -	Only interactions with a minimumSTRING interaction score of 900 are shown here. <br>
+                          -	Up to 20 interactions of the protein of interest are shown in the network. <br>
                           -	The missing interactions upon isoform switching are shown as a thick black lines. The remaining interactions are seen as a thin grey lines. <br>
                           -	Proteins found in the cancer gene census are highlighted in turquoise colours. <br>
                           <br>
                           <b>b.</b>Statistics on the cMDT <b>(Figure E-F)</b>: Number of missed and remaining interactions, network density score ( which estimates the density of interactions of a protein and its local neighborhood in the STRING interaction network), and cancer types where the transcript is found as cMDT.<br>
                           <br>
-                          <b>c.</b><b>Figure G-top <b></b> shows the table that includes the sample-based information for the interactions lost upon isoform switching: which interactions are lost in which sample.<br>
+                          <b>c.</b><b>Figure G-top </b> shows the table that includes the sample-based information for the interactions lost upon isoform switching: which interactions are lost in which sample.<br>
                           <br>
-                          <b>d.</b><b>Figure G-bottom</b></b>shows the table that includes the cancer census genes, included if an interaction with the protein of interest is lost upon isoform switching.<br>
+                          <b>d.</b><b>Figure G-bottom</b> shows the table that includes the cancer census genes, included if an interaction with the protein of interest is lost upon isoform switching.<br>
                           <br>
                           <figure>
-                              <img src="{{ url_for('static', filename='images/help4.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                              <img src="{{ url_for('static', filename='images/Help_FigureD_G.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
                           </figure>
                           <br>
-                          <b>Sample Based Page</b><br>
+                          <b>Sample Page</b><br>
                           <br>
                           In sample based page, the user can see the MDT-cMDT switch in the corresponding sample. Here, we also show the TPM counts for the MDTs and cMDTs in cancer sample along with the average TPM counts of MDTs and cMDTs in normal samples <b>(Figure H)</b>.
                           In addition, domain structure of MDT and cMDT are provided.
                           <br>
                           <br>
                             <figure>
-                              <img src="{{ url_for('static', filename='images/help5.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
+                              <img src="{{ url_for('static', filename='images/Help_FigureH.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
                           </figure>
                         </p>
                       </div>
@@ -180,7 +179,7 @@
 
                                     <div id="collapseFirst" class="collapse" aria-labelledby="Firstquestion" data-parent="#accordion">
                                       <div class="card-body">
-                                        CanIsoNet currently only reports the genes and corresponding isoforms that have been detected as cancer-specific isoform in our analysis. If the protein/isoform of interest is not found in CanIsoNet, that means we do not see it as cancer-specific cMDT across 24 cancer types.
+                                        CanIsoNet currently only reports the genes and corresponding isoforms that have been detected as disease-specific isoform in our analysis. If the protein/isoform of interest is not found in CanIsoNet, that means we do not see it as disease-specific cMDT in 24 different cancer types analysis and 1 OIH data analysis.
                                       </div>
                                     </div>
                                   </div>
@@ -194,7 +193,8 @@
                                     </div>
                                     <div id="collapseSecond" class="collapse" aria-labelledby="Secondquestion" data-parent="#accordion">
                                       <div class="card-body">
-                                          We would like to hear them all! Please contact with us via tuelay.karakulak@usz.ch
+                                          We would like to hear them all! <br>
+                                          Please contact us via tuelay.karakulak@usz.ch. <br>
                                           We will get back to you as soon as possible :)
                                       </div>
                                     </div>
@@ -203,13 +203,14 @@
                                     <div class="card-header" id="Thirdquestion">
                                       <h5 class="mb-0">
                                         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThird" aria-expanded="false" aria-controls="collapseThird">
-                                        Even though I see couple of interactions are seen to be lost in STRING interaction network, I can not see them in the tables. Why is that?
+                                        Why I see less protein interaction partner in CanIsoNet than STRING?
                                         </button>
                                       </h5>
                                     </div>
                                     <div id="collapseThird" class="collapse" aria-labelledby="Thirdquestion" data-parent="#accordion">
                                       <div class="card-body">
-                                        In STRING network, we show the isoform specific interaction network where missing and remaining interactions are shown. However, tables show missing interactions if both partner is expressed in a specific cancer type. If proteins have not found in cancer samples (not expressed), we can not find them as interaction lost. Thus, they are not seen in the table.
+                                        In CanIsoNet, we only show protein interactions whose domain-domain interaction information is available. If there is no domain information available, they are discarded in analysis. <br>
+                                        Moreover, tables in the transcript page show missing interactions if both interaction partner is expressed in a specific disease type. If proteins have not found in cancer samples (not expressed), we can not find them as interaction lost. Thus, they are not seen in the table.
                                       </div>
                                     </div>
                                   </div>
@@ -259,7 +260,7 @@
                       <a href="https://doi.org/10.1038/s41598-020-71221-5" target="_blank">Pathogenic impact of transcript isoform switching in 1,209 cancer samples covering 27 cancer types using an isoform-specific interaction network</a>,
                       Scientific Reports, 2020.
                       <br>
-                      Karakulak et al.,<a href="https://www.biorxiv.org/content/10.1101/2021.09.17.460795v1" target="_blank">CanIsoNet: A Database to Study the Functional Impact of Isoform Switching Events in Cancer</a>, BioRxiv, 2021.
+                      Karakulak et al., <a href="https://www.biorxiv.org/content/10.1101/2021.09.17.460795v1" target="_blank"> CanIsoNet: A Database to Study the Functional Impact of Isoform Switching Events in Cancer</a>, BioRxiv, 2021.
                   </h6>
                   <hr class="my-4">
                   <h6>   If you have any inquires about CanIsoNet:</h6>
@@ -281,5 +282,4 @@
             Plotly.plot('chart', plot, {}, {responsive: true});
         </script>
         {% endblock %}
-
 </body>

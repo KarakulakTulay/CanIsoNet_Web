@@ -41,7 +41,7 @@
                 <div class="col-xl-12">
                     <div class="content">
                       <div align="center" width="700px">
-                      <h4 class= "featurette-heading">Cancer Type: <span id="SampleCancerType"></span></h4>
+                      <h4 class= "featurette-heading">Disease Type: <span id="SampleDiseaseType"></span></h4>
                         </div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-chart-bar mr-1"></i> Top 10 cMDT and Number of cMDTs in each samples
+                        <i class="fas fa-chart-bar mr-1"></i> Top 10 Transcripts and cMDT Counts Distribution across Samples
 
                     </div>
                     <div class="card-body">
@@ -69,7 +69,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Transcripts found as cMDT in Cancer
+                        <i class="fas fa-table mr-1"></i> Transcripts found as cMDT in the Disease
                     </div>
                     <div class="table-responsive">
 
@@ -82,7 +82,7 @@
                         <table id="dataTable" class="table table-bordered table-striped"  width="100%" data-toggle="table" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" cellspacing="0" data-height="500" data-search="true"  data-total-rows="50">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>Cancer Type</th>
+                                    <th>Disease</th>
                                     <th>Sample ID</th>
                                     <th>Gene Name</th>
                                     <th>cMDT</th>
@@ -91,11 +91,11 @@
                             </thead>
                             {% for value in data %}
                             <tr>
-                              <td><a href="Cancer?cancer={{ value['Tissue']}}">{{ value['CancerType2']}}</a></td>
-                              <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['CancerSampleId']}}">{{ value['CancerSampleId']}}</a></td>
-                              <td><a href="Gene?gene={{ value['GeneName1'] }}">{{ value['GeneName1'] }}</a></td>
-                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
-                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['Transcript_Name'] }}</a></td>
+                              <td>{{ value['Tissue']}}</a></td>
+                              <td>{{ value['RNAseqAliquotID']}}</a></td>
+                              <td>{{ value['GeneName1'] }}</a></td>
+                              <td>{{ value['cMDT'] }}</a></td>
+                              <td>{{ value['Transcript_Name'] }}</a></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -109,7 +109,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Number of cMDTs in each sample
+                        <i class="fas fa-table mr-1"></i> Number of detected cMDTs in each sample
                     </div>
                     <div class="table-responsive">
                     <div id="toolbar2" class="select">
@@ -121,23 +121,19 @@
                         <table id="dataTable2" class="table table-bordered table-striped" width="100%" data-toggle="table" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar2" data-show-toggle="true" data-show-columns="true" cellspacing="0" data-height="500" data-search="true"  data-total-rows="50">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>Cancer Type</th>
+                                    <th>Disease</th>
                                     <th>Sample ID</th>
-                                    <th>Number Of cMDTs</th>
+                                    <th>Number Of MDTs</th>
                                 </tr>
                             </thead>
                             {% for value in data2 %}
                             <tr>
-                                <td><a href="Cancer?cancer={{ value['CancerType']}}">{{ value['CancerType2']}}</a></td>
-                              <!--  <td><a href="Sample?tissue={{ value['CancerType']}}&sampleid={{ value['SampleID']}}">{{ value['SampleID']}}</a></td> -->
+                                <td>{{ value['Tissue']}}</a></td>
                                 <td> {{ value['SampleID'] }} </td>
-                                <td> {{ value['NumberOfMDTs'] }} </td>
+                                <td> {{ value['Count'] }} </td>
                             </tr>
                             {% endfor %}
                         </table>
-                        <br>
-                        <br>
-                        <br>
                     </div>
                 </div>
             </div>
@@ -151,14 +147,14 @@
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
-    <script src="{{ url_for('static', filename='js/cancerspecific.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/diseasespecific.js') }}"></script>
+
     <script>
-        SampleCancerType_gtex = '{{ SampleCancerType }}';
-        SampleCancerType = SampleCancerType_gtex.split('.')[1]
-        document.getElementById('SampleCancerType').innerHTML = SampleCancerType;
+        SampleDiseaseType = '{{ SampleDiseaseType }}';
+        document.getElementById('SampleDiseaseType').innerHTML = SampleDiseaseType;
 
         var image = document.getElementsByClassName("cancer_id")[0]
-        image.src = "static/images/" + SampleCancerType + ".png"
+        image.src = "static/images/" + SampleDiseaseType + ".png"
 
     </script>
     <script>
@@ -181,7 +177,7 @@
                 columns: [
                   {
                     field: 'Cancer Type',
-                    title: 'Cancer Type'
+                    title: 'Disease'
                   }, {
                     field: 'Sample ID',
                     title: 'Sample ID'
@@ -205,7 +201,7 @@
                 columns: [
                   {
                     field: 'CancerType',
-                    title: 'Cancer Type'
+                    title: 'Disease'
                   }, {
                     field: 'Sample ID',
                     title: 'Sample ID'

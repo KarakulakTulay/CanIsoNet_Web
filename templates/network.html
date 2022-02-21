@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/amblem.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}">
 
     <script type="text/javascript" src="https://version-11-5.string-db.org/javascript/combined_embedded_network_v2.0.3.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -55,13 +55,13 @@
       <div class="col-xl-12">
           <div class="card mb-4">
               <div class="card-header">
-                  <i class="fas fa-chart-bar mr-1"></i> ENST Interaction Network
+                  <i class="fas fa-chart-bar mr-1"></i> cMDT Interaction Network
               </div>
             <div class="card-body">
               <!--  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="395" height="305" viewBox="0 0 395 305" class="shadow"> -->
                   <div id="stringEmbedded"></div>
                     <figure>
-                        <img src="{{ url_for('static', filename='images/signs2.png')}}" class="figure-img img-fluid rounded" style="max-width: 30%">
+                        <img src="{{ url_for('static', filename='images/network_signs2.png')}}" class="figure-img img-fluid rounded" style="max-width: 15%">
                     </figure>
                     <line x1=x1 y1=y1 x2=x2 y2=y2 stroke-width="1" class="line"/>
                <!-- </svg> -->
@@ -75,18 +75,18 @@
       <div class="col-xl-12">
           <div class="card mb-4">
           <div class="card-header">
-              <i class="fas fa-table mr-1"></i> Interaction Losts with cMDT
+              <i class="fas fa-table mr-1"></i> Protein interaction lost due to MDT switch
           </div>
           <div class="table-responsive">
-            <table id="dataTable2" class="table table-bordered table-striped" width="100%" data-toggle="table" cellspacing="0"  data-search="true" data-height="300" data-show-export="true" data-page-size="10" data-total-rows="50" data-pagination="true" >
-                <h6> *having domain-domain interaction</h6>
+            <table id="dataTable2" class="table table-bordered table-striped" width="100%" data-toggle="table" cellspacing="0"  data-search="true" data-height="400" data-show-export="true" data-page-size="20" data-total-rows="50" data-pagination="true" >
+                <h6> *having domain-domain interaction information</h6>
                 <thead class="thead-dark">
                   <tr>
                       <th scope="col">Gene<br>Name</th>
-                      <th scope="col"># of<br>Interaction*</th>
-                      <th scope="col"># of Missed<br>Interaction</th>
+                      <th scope="col">Number of<br>Interaction*</th>
+                      <th scope="col"># of Lost<br>Interaction</th>
                       <th scope="col">Interaction<br>Lost</th>
-                      <th scope="col">Domain Int<br>Lost</th>
+                      <th scope="col">Lost<br>Domain<-->Domain Int</th>
                   </tr>
               </thead>
              {% for value in data_statistics %}
@@ -99,7 +99,7 @@
                     <td>None</td>
                     {% else %}
                     <td><b>{{ value['GeneName1'] }}</b>-{{ value['GeneName2'] }}</td>
-                    <td><b><a href="http://pfam.xfam.org/family/{{ value['Domain1'] }}">{{ value['Domain1'] }}</b>({{ value['Region1'] }})-<a href="http://pfam.xfam.org/family/{{ value['Domain2'] }}">{{ value['Domain2'] }}</td>
+                    <td><b><a href="http://pfam.xfam.org/family/{{ value['Domain1'] }}">{{ value['Domain1'] }}</b>({{ value['Region1'] }})--<a href="http://pfam.xfam.org/family/{{ value['Domain2'] }}">{{ value['Domain2'] }}</td>
                     {% endif %}
                 </tr>
                 {% endfor %}
@@ -115,7 +115,7 @@
         <div class="content">
             <div align="center">
                 <h4 class= "featurette-heading">Network Density Score: <span id="string_score"></span>% <span class = "text-muted"></span> </h4>
-                <h6> Network Density Score corresponds to the density of STRING interactions in the local neighborhood of a protein. </h6>
+                <h6> The local network of this protein has more interaction than <span id="string_score2"></span>% of all proteins in the proteome.</h6>
             </div>
         </div>
         </div>
@@ -135,7 +135,7 @@
           <div class="col-xl-12">
               <div class="card mb-4">
                   <div class="card-header">
-                      <i class="fas fa-table mr-1"></i> Isoform Specific Interactions Lost across all Cancer Type
+                      <i class="fas fa-table mr-1"></i> Protein Interaction Lost due to the MDT switch in all disease types
                   </div>
                   <div class="table-responsive">
                     <div id="toolbar" class="select">
@@ -148,7 +148,7 @@
                           <thead class="thead-dark">
                             <tr>
                               <th scope="col">Sample ID</th>
-                              <th scope="col">Cancer Type</th>
+                              <th scope="col">Disease Type</th>
                               <th scope="col">Gene Name 1</th>
                               <th scope="col">Gene Name 2</th>
                               <th scope="col">cMDT</th>
@@ -179,7 +179,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Lost Interactions with Cancer Gene Census Genes
+                        <i class="fas fa-table mr-1"></i> Protein Interaction Lost with Cancer Census Proteins due to MDT Switch
                     </div>
                     <div class="table-responsive">
                         <div id="toolbar3" class="select">
@@ -271,6 +271,9 @@
 
             string_score = '{{ string_score }}'
             document.getElementById('string_score').innerHTML = string_score;
+
+            string_score2 = '{{ string_score }}'
+            document.getElementById('string_score2').innerHTML = string_score2;
 
             transcript_name = '{{ transcript_name }}'
             document.getElementById('transcript_name').innerHTML = transcript_name;
@@ -419,7 +422,7 @@
                title: 'SampleID'
              }, {
                field: 'CancerType2',
-               title: 'Cancer Type'
+               title: 'Disease Type'
              }, {
                field: 'GeneName1',
                title: 'Gene Name'

@@ -80,7 +80,7 @@
                           <br>
                           CanIsoNet offers two starting points to the user: <br>
                           <br>
-                          <b>1)	Browse Disease Type:</b> The user can find 25 disease types to browse. In the table, the first column represents a PCAWG-Code used in the Pan-Cancer Analysis Whole Genome Project for 24 cancer types and one BioProject Accession Number for OIH. The second column corresponds to the name of the disease type. The third column indicates the data source (project). <br>
+                          <b>1)	Browse Disease Type:</b> The user can find 28 disease types to browse. In the table, the first column represents a PCAWG-Code used in the Pan-Cancer Analysis Whole Genome Project for 27 cancer types and one BioProject Accession Number for OIH. The second column corresponds to the name of the disease type. The third column indicates the data source (project). <br>
                           <br>
                           <b>2)	Browse a Genes & Isoforms:</b>  The user can search for a specific gene name or ENST id, or corresponding transcript name. Isoform search leads the user to the Transcript Page while gene search leads the user to the Gene page.<br>
                           <br>
@@ -94,11 +94,11 @@
                           <br>
                           Browsing by disease type directs users to a disease page. This page presents three main findings:
                           <br>
-                          <b>a.</b>	In the Figure B-left</b>, you will see frequencies of the top ten most common cMDTs, which represents the proportion of the transcripts occurence across cancer samples. Some cMDTs are found in every sample, which makes them potential biomarkers for that cancer type.  <br>
+                          <b>a.</b>	In the Figure B-left</b>, you will see frequencies of the top ten most common dMDTs, which represents the proportion of the transcripts occurence across cancer samples. Some dMDTs are found in every sample, which makes them potential biomarkers for that cancer type.  <br>
                           <br>
-                          <b>b.</b>	In the Figure B-right</b>: you will find the distribution of cMDT counts across samples of the cancer type selected which is also presented as a table on the bottom table of the page.<br>
+                          <b>b.</b>	In the Figure B-right</b>: you will find the distribution of dMDT counts across samples of the cancer type selected which is also presented as a table on the bottom table of the page.<br>
                           <br>
-                          <b>c.</b>	In the table below the figures, the user can find all different isoforms found as cMDTs in the cancer type of interest. The user can search for a specific isoform or sample. <br>
+                          <b>c.</b>	In the table below the figures, the user can find all different isoforms found as dMDTs in the cancer type of interest. The user can search for a specific isoform or sample. <br>
                           <br>
                           <figure>
                               <img src="{{ url_for('static', filename='images/Help_FigureB_C.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
@@ -109,11 +109,11 @@
                           The transcript page contains the following information:
                           <br>
                           <b>a.</b>	STRING-based transcript interaction network <b>(Figure D)</b>:<br>
-                          -	Up to 20 interactions of the protein of interest are shown in the network. <br>
+                          -	Up to 30 interactions of the protein of interest are shown in the network. <br>
                           -	The missing interactions upon isoform switching are shown as a thick black lines. The remaining interactions are seen as a thin grey lines. <br>
-                          -	Proteins found in the cancer gene census are highlighted in turquoise colours. <br>
+                          -	Proteins found in the <a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">ClinVar</a> are highlighted in turquoise colours. <br>
                           <br>
-                          <b>b.</b>Statistics on the cMDT <b>(Figure E-F)</b>: Number of missed and remaining interactions, network density score ( which estimates the density of interactions of a protein and its local neighborhood in the STRING interaction network), and cancer types where the transcript is found as cMDT.<br>
+                          <b>b.</b>Statistics on the dMDT <b>(Figure E-F)</b>: Number of missed and remaining interactions, network density score ( which estimates the density of interactions of a protein and its local neighborhood in the STRING interaction network), and disease types where the transcript is found as dMDT.<br>
                           <br>
                           <b>c.</b><b>Figure G-top </b> shows the table that includes the sample-based information for the interactions lost upon isoform switching: which interactions are lost in which sample.<br>
                           <br>
@@ -125,8 +125,8 @@
                           <br>
                           <b>Sample Page</b><br>
                           <br>
-                          In sample based page, the user can see the MDT-cMDT switch in the corresponding sample. Here, we also show the TPM counts for the MDTs and cMDTs in cancer sample along with the average TPM counts of MDTs and cMDTs in normal samples <b>(Figure H)</b>.
-                          In addition, domain structure of MDT and cMDT are provided.
+                          In sample based page, the user can see the MDT-dMDT switch in the corresponding sample. Here, we also show the TPM counts for the MDTs and dMDTs in cancer sample along with the average TPM counts of MDTs and dMDTs in normal samples <b>(Figure H)</b>.
+                          In addition, domain structure of MDT and dMDT are provided.
                           <br>
                           <br>
                             <figure>
@@ -135,11 +135,11 @@
                         </p>
                       </div>
                       <div class="tab-pane fade" id="v-pills-mdt" role="tabpanel" aria-labelledby="v-pills-mdt-tab">
-                        <p> Under normal conditions, cells of almost all tissue types express the same predominant canonical transcript isoform at each gene locus (MDT). In cancer, however, splicing regulation is often disturbed, leading to a switch from
-                            the most dominant transcripts (MDT) to a cancer-specific MDT (cMDT) (see Figure below). <br>
+                        <p> Under normal conditions, cells of almost all tissue types express the same predominant canonical transcript isoform at each gene locus (MDT). In cancer (or other diseases), however, splicing regulation is often disturbed, leading to a switch from
+                            the most dominant transcripts (MDT) to a disease-specific MDT (dMDT) (see Figure below). <br>
                             To understand to which extent of these switches occur, we have recenty analyzed isoform-specific protein–protein interaction disruptions in 1,209 cancer samples covering 27 different cancer
                             types from the Pan-Cancer Analysis of Whole Genomes (PCAWG) project of the International Cancer Genomics Consortium (ICGC). <br>
-                             Our study revealed large variations in the number of cMDT. Some cMDT were found in 100% of all samples in a cancer type, making them ideal candidates for diagnostic biomarkers.
+                             Our study revealed large variations in the number of dMDT. Some dMDT were found in 100% of all samples in a disease type, making them ideal candidates for diagnostic biomarkers.
                             <figure>
                                 <img src="{{ url_for('static', filename='images/mdtswitch.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
                                 <figcaption class="figure-caption text-left">
@@ -153,7 +153,7 @@
                               <figure>
                                   <img src="{{ url_for('static', filename='images/whatiscanisonet.png')}}" class="figure-img img-fluid rounded" style="max-width: 100%">
                                   <figcaption class="figure-caption text-leftt">
-                                    <b>Figure.</b> Overview of methodology to assess the impact of cancer-specific Most Dominant Transcripts (cMDT) using an isoform-specific interaction network. The top shows the steps and filters for cMDT detection. The bottom describes the methods and databases of the isoform-specific interaction network CanIsoNet. The central section depicts the combination of cMDT information with data from CanIsoNet to assess the functional impact of alternatively spliced isoforms.
+                                    <b>Figure.</b> Overview of methodology to assess the impact of disease-specific Most Dominant Transcripts (dMDT) using an isoform-specific interaction network. The top shows the steps and filters for dMDT detection. The bottom describes the methods and databases of the isoform-specific interaction network CanIsoNet. The central section depicts the combination of dMDT information with data from CanIsoNet to assess the functional impact of alternatively spliced isoforms.
                                   </figcaption>
                               </figure>
                         </p>
@@ -163,7 +163,7 @@
                         <br>
                         <br>
                         <br>
-                        <p> The sample size used to assess cMDTs in PCAWG and GTEx as following:
+                        <p> The sample size used to assess dMDTs in PCAWG and GTEx as following:
                         </p>
                       </div>
                         <div class="tab-pane fade" id="v-pills-faq" role="tabpanel" aria-labelledby="v-pills-faq-tab">
@@ -179,7 +179,7 @@
 
                                     <div id="collapseFirst" class="collapse" aria-labelledby="Firstquestion" data-parent="#accordion">
                                       <div class="card-body">
-                                        CanIsoNet currently only reports the genes and corresponding isoforms that have been detected as disease-specific isoform in our analysis. If the protein/isoform of interest is not found in CanIsoNet, that means we do not see it as disease-specific cMDT in 24 different cancer types analysis and 1 OIH data analysis.
+                                        CanIsoNet currently only reports the genes and corresponding isoforms that have been detected as disease-specific isoform in our analysis. If the protein/isoform of interest is not found in CanIsoNet, this means that we do not see it as disease-specific dMDT in the analysis of 28 different diseases types.
                                       </div>
                                     </div>
                                   </div>
@@ -241,7 +241,7 @@
                             </li>
                             <br>
                             <li>
-                            Data used to built CanIsoNet were collected from <a href="http://version10.string-db.org" target="_blank">STRING</a>, <a href="https://3did.irbbarcelona.org" target="_blank">3did</a>, <a href="https://cancer.sanger.ac.uk/cosmic" target="_blank">COSMIC</a>, <a href="http://feb2014.archive.ensembl.org/index.html" target="_blank">Ensembl</a> and <a href="http://www.wwpdb.org/" target="_blank">Protein Data Bank.</a>
+                            Data used to built CanIsoNet were collected from <a href="http://version10.string-db.org" target="_blank">STRING</a>, <a href="https://3did.irbbarcelona.org" target="_blank">3did</a>, <a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">ClinVar</a>, <a href="http://feb2014.archive.ensembl.org/index.html" target="_blank">Ensembl</a> and <a href="http://www.wwpdb.org/" target="_blank">Protein Data Bank.</a>
                             </li>
                         </ul>
                         </p>

@@ -33,11 +33,9 @@
     <div class="row">
         <div class="col-xl-2">
             <img class="cancer_id mx-auto d-block" id ="cancer_id" src="xx.png" class="mx-auto d-block" style="max-width: 75%">
-           <!-- <img src="{{ url_for('static', filename='images/breast')}}" class="figure-img img-fluid rounded" style="max-width: 100%"> -->
         </div>
         <div class= "col-xl-10">
             <div class="jumbotron">
-          <!--  <div class="row"> -->
                 <div class="col-xl-12">
                     <div class="content">
                       <div align="center" width="700px">
@@ -52,7 +50,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-chart-bar mr-1"></i> Top 10 cMDT and Number of cMDTs in each samples
+                        <i class="fas fa-chart-bar mr-1"></i> Top 10 dMDT and Number of dMDTs in each samples
 
                     </div>
                     <div class="card-body">
@@ -69,7 +67,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Transcripts found as cMDT in Cancer
+                        <i class="fas fa-table mr-1"></i> Transcripts found as dMDT in Disease
                     </div>
                     <div class="table-responsive">
 
@@ -85,7 +83,7 @@
                                     <th>Cancer Type</th>
                                     <th>Sample ID</th>
                                     <th>Gene Name</th>
-                                    <th>cMDT</th>
+                                    <th>dMDT</th>
                                     <th>Transcript Name</th>
                                 </tr>
                             </thead>
@@ -93,9 +91,9 @@
                             <tr>
                               <td><a href="Cancer?cancer={{ value['Tissue']}}">{{ value['CancerType2']}}</a></td>
                               <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['CancerSampleId']}}">{{ value['CancerSampleId']}}</a></td>
-                              <td><a href="Gene?gene={{ value['GeneName1'] }}">{{ value['GeneName1'] }}</a></td>
-                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
-                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['Transcript_Name'] }}</a></td>
+                              <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Human">{{ value['GeneName1'] }}</a></td>
+                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
+                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['Transcript_Name'] }}</a></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -109,7 +107,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Number of cMDTs in each sample
+                        <i class="fas fa-table mr-1"></i> Number of dMDTs in each sample
                     </div>
                     <div class="table-responsive">
                     <div id="toolbar2" class="select">
@@ -123,7 +121,7 @@
                                 <tr>
                                     <th>Cancer Type</th>
                                     <th>Sample ID</th>
-                                    <th>Number Of cMDTs</th>
+                                    <th>Number Of dMDTs</th>
                                 </tr>
                             </thead>
                             {% for value in data2 %}
@@ -213,8 +211,8 @@
                     field: 'Gene Name',
                     title: 'Gene Name'
                   }, {
-                    field: 'cMDT',
-                    title: 'cMDT'
+                    field: 'dMDT',
+                    title: 'dMDT'
                   }, {
                     field: 'Transcript Name',
                     title: 'Transcript Name'

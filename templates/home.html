@@ -25,7 +25,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script> -->
 </head>
 <body>
     {% extends "template.html" %} {% block content %}
@@ -43,23 +42,38 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-6">
-                <div class="ui-widget">
+            <div class="col-4">
 
-                <label for="genetakeinput"></label>
-                <form class="needs-validation" align="middle" novalidate>
-                <div id="gene_example_return" align="left">
-                    Gene Search:
-                    <a class="example">Examples:</a>
-                    <a href="#" class="example">#1</a>
-                    <a href="#" class="example">#2</a>
+                <div id = "button_change">
+
+                <div class="btn-check">
+                  <label class="btn btn-light active">
+                    <input type="radio" name="options" id="Human" value='Human' autocomplete="off" checked> Human
+                  </label>
+                  <label class="btn btn-light">
+                    <input type="radio" name="options" id="Mouse" value ='Mouse' autocomplete="off" > Mouse
+                  </label>
+                   </div>
                 </div>
-                <input type="text" class="form-control  form-control-lg ui-autocomplete-input" autocomplete="off" id="genetakeinput" placeholder="Type a Gene Name" required/>
-                <br>
-                <input value="Go" class="fbutton" type="submit" onClick="GeneFunction()"/>
-                </form>
             </div>
             </div>
+            <div class = "row">
+                <div class='col-6'>
+                   <div class="ui-widget">
+                       <label for="genetakeinput"></label>
+                        <form class="needs-validation" align="middle" novalidate>
+                         <div id="gene_example_return" align="left">
+                             Gene Search:
+                             <a class="example">Examples:</a>
+                             <a href="#" class="example">#1</a>
+                             <a href="#" class="example">#2</a>
+                         </div>
+                         <input type="text" class="form-control form-control-lg ui-autocomplete-input" autocomplete="off" id="genetakeinput" placeholder="Type an Gene Name" required/>
+                        <br>
+                        <input value="Go" class="fbutton" type="submit" onClick="GeneFunction()"/>
+                        </form>
+                   </div>
+                </div>
                 <div class='col-6'>
                    <div class="ui-widget">
                        <label for="isotakeinput"></label>
@@ -97,16 +111,15 @@
                    </thead>
                    {% for value in data %}
                    <tr>
+                    {% if value['Dataset'] == 'PCAWG' %}
                        <td><a href="Cancer?cancer={{ value['PCAWG_GTEx']}}">{{ value['PCAWG-Code']}}</a></td>
                        <td><a href="Cancer?cancer={{ value['PCAWG_GTEx']}}">{{ value['Cancer Type Name']}}</a></td>
                        <td>{{ value['Dataset'] }}</td>
-                   </tr>
-                   {% endfor %}
-                   {% for value in data_disease_dict %}
-                   <tr>
+                   {% else %}
                        <td><a href="Disease?disease={{ value['PCAWG_GTEx']}}">{{ value['PCAWG-Code']}}</a></td>
                        <td><a href="Disease?disease={{ value['PCAWG_GTEx']}}">{{ value['Cancer Type Name']}}</a></td>
                        <td>{{ value['Dataset'] }}</td>
+                   {% endif %}
                    </tr>
                    {% endfor %}
                </table>
@@ -133,38 +146,68 @@
                 <p><a href="https://www.sib.swiss/abdullah-kahraman-group" target="_blank">Group Page</a></p>
             </div>
         </div>
-    <!--   <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script> -->
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
          <script>
             function GeneFunction() {
+
+                organism = document.querySelector('input[name="options"]:checked').value;
                 genename = document.getElementById("genetakeinput").value
                 if (genename.length !== 0) {
-                    window.open("https://www.caniso.net/Gene?gene=" + document.getElementById("genetakeinput").value);
+                    window.open("https://www.caniso.net/Gene?gene=" + genename + "&organism=" + organism);
                 }
             }
         </script>
          <script>
             function isoformFunction() {
-                dictionary = JSON.parse('{{ temp_dict | tojson  }}')
-                var iso_value = document.getElementById("isotakeinput").value
-                if (iso_value.length !== 0) {
-                    if (iso_value.startsWith("ENST")) {
-                        var genename = dictionary.filter(function (element) { return element.DomCancerTrans == iso_value })
-                        var gene_name = genename[0]['GeneName1_x']
-                        window.open("https://www.caniso.net/Transcript?gene=" + gene_name + "&enst=" + document.getElementById("isotakeinput").value)
 
-                    } else {
-                        var new_genename = dictionary.filter(function (element) { return element.Transcript_Name == iso_value })
-                        var new_gene_name = new_genename[0]['GeneName1_x']
+                organism = document.querySelector('input[name="options"]:checked').value;
 
-                        var enst_value = dictionary.filter(function (element) { return element.Transcript_Name == iso_value })
-                        var iso_https = enst_value[0]['DomCancerTrans']
-                        window.open("https://www.caniso.net/Transcript?gene=" + new_gene_name + "&enst=" + iso_https);
+                if (organism == 'Human' | organism == 'Homo Sapiens') {
+                    dictionary = JSON.parse('{{ temp_dict_human | tojson  }}')
+
+                    var iso_value = document.getElementById("isotakeinput").value
+
+                    if (iso_value.length !== 0) {
+                        if (iso_value.startsWith("ENST")) {
+                            var genename = dictionary.filter(function (element) { return element.DomCancerTrans == iso_value })
+                            var gene_name = genename[0]['GeneName1_x']
+                            window.open("https://www.caniso.net/Transcript?gene=" + gene_name + "&enst=" + document.getElementById("isotakeinput").value + "&organism=" + organism)
+
+                        } else {
+                            var new_genename = dictionary.filter(function (element) { return element.Transcript_Name == iso_value })
+                            var new_gene_name = new_genename[0]['GeneName1_x']
+
+                            var enst_value = dictionary.filter(function (element) { return element.Transcript_Name == iso_value })
+                            var iso_https = enst_value[0]['DomCancerTrans']
+                        window.open("https://www.caniso.net/Transcript?gene=" + new_gene_name + "&enst=" + iso_https + "&organism=" + organism);
+                        }
                     }
-                }
-               // window.location.href= "https://www.caniso.net/Transcript_Based?gene=" + document.getElementById("gene2takeinput").value + "&enst=" + document.getElementById("isotakeinput").value;
+
+                    }
+
+                if (organism == 'Mouse') {
+                    dictionary = JSON.parse('{{ temp_dict_mouse | tojson  }}')
+
+                    var iso_value = document.getElementById("isotakeinput").value
+
+                    if (iso_value.length !== 0) {
+                        if (iso_value.startsWith("ENSMU")) {
+                            var genename = dictionary.filter(function (element) { return element.DomCancerTrans == iso_value })
+                            var gene_name = genename[0]['GeneName1_x']
+                        window.open("https://www.caniso.net/Transcript?gene=" + gene_name + "&enst=" + document.getElementById("isotakeinput").value  + "&organism=" + organism)
+
+                        } else {
+                            var new_genename = dictionary.filter(function (element) { return element.Transcript_Name == iso_value })
+                            var new_gene_name = new_genename[0]['GeneName1_x']
+
+                            var enst_value = dictionary.filter(function (element) { return element.Transcript_Name == iso_value })
+                            var iso_https = enst_value[0]['DomCancerTrans']
+                        window.open("https://www.caniso.net/Transcript?gene=" + new_gene_name + "&enst=" + iso_https + "&organism=" + organism);
+                     }
+                    }
+                    }
             };
         </script>
         <script>

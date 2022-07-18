@@ -20,14 +20,12 @@
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}">
 
-    <script type="text/javascript" src="https://version-11-5.string-db.org/javascript/combined_embedded_network_v2.0.3.js"></script>
+    <script type="text/javascript" src="https://version-11-5.string-db.org/javascript/combined_embedded_network_v2.0.4.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 
 </head>
-
-<!-- HTML CODE -->
 
 <body onload='javascript:send_request_to_string(); invokeIsonet()'>
 
@@ -36,7 +34,6 @@
   <div class="container">
     <br>
       <div class="jumbotron">
-      <!--  <div class="row"> -->
             <div class="col-xl-12">
                 <div class="content">
                   <div align="center">
@@ -55,16 +52,14 @@
       <div class="col-xl-12">
           <div class="card mb-4">
               <div class="card-header">
-                  <i class="fas fa-chart-bar mr-1"></i> cMDT Interaction Network
+                  <i class="fas fa-chart-bar mr-1"></i> dMDT Interaction Network
               </div>
             <div class="card-body">
-              <!--  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="395" height="305" viewBox="0 0 395 305" class="shadow"> -->
                   <div id="stringEmbedded"></div>
                     <figure>
-                        <img src="{{ url_for('static', filename='images/network_signs2.png')}}" class="figure-img img-fluid rounded" style="max-width: 15%">
+                        <img src="{{ url_for('static', filename='images/string_signs.png')}}" class="figure-img img-fluid rounded" style="max-width: 15%">
                     </figure>
                     <line x1=x1 y1=y1 x2=x2 y2=y2 stroke-width="1" class="line"/>
-               <!-- </svg> -->
             </div>
         </div>
       </div>
@@ -93,7 +88,7 @@
                 <tr>
                     <td>{{ value['GeneName1'] }}</td>
                     <td>{{ value['NumberOfStringInt'] }}</td>
-                    <td>{{ value['MissedInteractions'] }}</td>
+                    <td>{{ value['Sum'] }}</td>
                     {% if value['GeneName2'] == "-" %}
                     <td>None</td>
                     <td>None</td>
@@ -123,7 +118,7 @@
     <div class="col-xl-8">
       <div class="card mb-4">
       <div class="card-header">
-          <i class="fas fa-chart-pie mr-1"></i> Statistics on cMDT
+          <i class="fas fa-chart-pie mr-1"></i> Statistics on dMDT
       </div>
       <div class="card-body">
         <div class="chart js-plotly-plot" id="sample_graph" data-height="500" data-search="true"></div>
@@ -151,22 +146,36 @@
                               <th scope="col">Disease Type</th>
                               <th scope="col">Gene Name 1</th>
                               <th scope="col">Gene Name 2</th>
-                              <th scope="col">cMDT</th>
+                              <th scope="col">dMDT</th>
                               <th scope="col"> Transcript Name</th>
                             </tr>
                           </thead>
                               {% for value in data %}
                               <tr>
+                                  {% if value['CancerType2'] != 'OIH' %}
                                   <td><a href="Sample?sampleid={{ value['CancerSampleId']}}&gene={{ value['GeneName1']}}&tissue={{ value['Tissue']}}">{{ value['CancerSampleId']}}</a></td>
-                                  <td><a href="Cancer?cancer={{ value['Tissue']}}">{{ value['CancerType2']}}</a></td>
-                                  <td><a href="Gene?gene={{ value['GeneName1'] }}">{{ value['GeneName1'] }}</a></td>
+                                  {% else %}
+                                  <td><a href="Sample?sampleid={{ value['CancerSampleId']}}&gene={{ value['GeneName1']}}&tissue={{ value['CancerType2']}}">{{ value['CancerSampleId']}}</a></td>
+                                  {% endif %}
+                                  {% if value['CancerType2'] != 'OIH' %}
+                                  <td><a href="Cancer?cancer={{ value['Tissue']}}">{{ value['CancerType2'] }}</a></td>
+                                  <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Human">{{ value['GeneName1'] }}</a></td>
+                                  {% else %}
+                                  <td><a href="Disease?disease={{ value['CancerType2']}}">{{ value['CancerType2'] }}</a></td>
+                                  <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Mouse">{{ value['GeneName1'] }}</a></td>
+                                  {% endif %}
                                   {% if value['GeneName2'] == "-" %}
                                   <td>None</td>
                                   {% else %}
                                   <td>{{ value['GeneName2'] }}</td>
                                   {% endif %}
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['DomCancerTrans'] }}</a></td>
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}">{{ value['Transcript_Name'] }}</a></td>
+                                  {% if value['CancerType2'] != 'OIH' %}
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['Transcript_Name'] }}</a></td>
+                                  {% else %}
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['DomCancerTrans'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['Transcript_Name'] }}</a></td>
+                                  {% endif %}
                               </tr>
                               {% endfor %}
                       </table>
@@ -179,7 +188,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Protein Interaction Lost with Cancer Census Proteins due to MDT Switch
+                        <i class="fas fa-table mr-1"></i> Protein Interaction Lost with Proteins annotated in Clinvar
                     </div>
                     <div class="table-responsive">
                         <div id="toolbar3" class="select">
@@ -192,9 +201,9 @@
                             <thead class="thead-dark">
                                 <th scope="col">Gene Name</th>
                             </thead>
-                                 {% for value in cgc %}
+                                 {% for value in clinvar_dict2 %}
                                 <tr>
-                                    <td><a href="https://cancer.sanger.ac.uk/cosmic/gene/analysis?ln={{ value['GeneName'] }}">{{ value['GeneName'] }}</a></td>
+                                    <td><a href="https://www.ncbi.nlm.nih.gov/gene/{{ value['GeneID'] }}">{{ value['GeneName'] }}</a></td>
                                 </tr>
                                 {% endfor %}
                         </table>
@@ -239,8 +248,6 @@
            var protein = text.split(' ');
 
            partner_genenames_missed = JSON.parse('{{ partner_genenames | tojson  }}');
-          // ensp_frame_exists = JSON.parse('{{ ensp_frame_exists | tojson  }}');
-          // consol.log(ensp_frame_exists)
            partner_genenames_exists = JSON.parse('{{ partner_genenames_exists | tojson  }}');
 
            partner_genenames_missed.push(protein)
@@ -253,8 +260,18 @@
                partner_genenames_missed.push.apply(partner_genenames_missed,partner_genenames_exists.slice(0, 10))
            }
 
+           organism = '{{ organism }}'
+
+           if (organism == 'Human') {
+               species = '9606'
+           }
+
+           if (organism == 'Mouse') {
+               species = '10090'
+           }
+
            getSTRING('https://version-11-5.string-db.org', {
-               'species': '9606',
+               'species': species,
                //'identifiers': protein,
                'identifiers':  partner_genenames_missed,
                'network_flavor': 'confidence',
@@ -277,17 +294,13 @@
 
             transcript_name = '{{ transcript_name }}'
             document.getElementById('transcript_name').innerHTML = transcript_name;
-            //genename_searched = localStorage.getItem('geneid')
             enstidxx = '{{ enstid }}';
             document.getElementById('enstidxx').innerHTML = enstidxx;
             genename_searched = '{{ genename }}';
             document.getElementById('genename_searched').innerHTML = genename_searched;
 
-            //var storedNames = JSON.parse(localStorage.getItem("nodenames"));
             partner_genenames = JSON.parse('{{ partner_genenames | tojson  }}');
-            // ensp_frame = JSON.parse('{{ partner_genenames | tojson  }}');
-
-            df_cgc_list = JSON.parse('{{ df_cgc_list | tojson  }}');
+            df_clinvar_list = JSON.parse('{{ df_clinvar_list | tojson  }}');
 
             protein_nodes = document.getElementsByClassName('nwnodecontainer');
 
@@ -325,12 +338,6 @@
                         continue;
                     }
 
-                    //document.getElementById('x1').innerHTML = pos_partner_id_x;
-                    //document.getElementById('y1').innerHTML = pos_partner_id_y;
-                    //document.getElementById('x2').innerHTML = pos_gene_id_searched_x;
-                    //document.getElementById('y2').innerHTML = pos_gene_id_searched_y;
-
-
                     var elem = document.getElementById('line' + '.' + geneid_searched + '.' + partner_id + '.' + '0')
                     var elem1 = document.getElementById('line' + '.' + geneid_searched + '.' + partner_id + '.' + '1')
                     var elem2 = document.getElementById('line' + '.' + partner_id + '.' + geneid_searched + '.' + '0')
@@ -363,7 +370,6 @@
             }
 
             var object = {};
-            //var cgc_array = [];
 
             for (j = 0; j < protein_nodes.length; j++) {
 
@@ -378,23 +384,15 @@
 
                   geneName = protein_nodes[j].getAttribute('data-safe_div_label')
 
-                  for(i = 0; i < df_cgc_list.length; i++) {
+                  for(i = 0; i < df_clinvar_list.length; i++) {
 
-                      cgc_name = df_cgc_list[i]
+                      cgc_name = df_clinvar_list[i]
 
-                      if (cgc_name == geneName) {
+                      if (cgc_name == geneName.toUpperCase()) {
 
                         document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(0,255,255)');
-                        //cgc_array.push(cgc_name);
-                      } //else {
-                         //continue;
-                        //document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(255,255,255)');
-                     // };
+                      }
 
-                      //if (cgc_name == genename_searched) {
-
-                       // document.getElementsByClassName('nwbubblecoloredcircle')[j].setAttribute('fill', 'rgb(255,0,0)');
-                      //}
                     }
 
                 if (geneName == genename_searched) {
@@ -431,7 +429,7 @@
                title: 'Gene Name2'
              }, {
                field: 'DomCancerTrans',
-               title: 'cMDT'
+               title: 'dMDT'
              }, {
                field: 'Transcript_Name',
                title: 'Transcript Name'

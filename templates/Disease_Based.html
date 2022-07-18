@@ -52,7 +52,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-chart-bar mr-1"></i> Top 10 Transcripts and cMDT Counts Distribution across Samples
+                        <i class="fas fa-chart-bar mr-1"></i> Top 10 Transcripts and dMDT Counts Distribution across Samples
 
                     </div>
                     <div class="card-body">
@@ -69,7 +69,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Transcripts found as cMDT in the Disease
+                        <i class="fas fa-table mr-1"></i> Transcripts found as dMDT in the Disease
                     </div>
                     <div class="table-responsive">
 
@@ -85,17 +85,17 @@
                                     <th>Disease</th>
                                     <th>Sample ID</th>
                                     <th>Gene Name</th>
-                                    <th>cMDT</th>
+                                    <th>dMDT</th>
                                     <th>Transcript Name</th>
                                 </tr>
                             </thead>
                             {% for value in data %}
                             <tr>
-                              <td>{{ value['Tissue']}}</a></td>
-                              <td>{{ value['RNAseqAliquotID']}}</a></td>
-                              <td>{{ value['GeneName1'] }}</a></td>
-                              <td>{{ value['cMDT'] }}</a></td>
-                              <td>{{ value['Transcript_Name'] }}</a></td>
+                              <td><a href="Disease?disease={{ value['Tissue']}}">{{ value['Tissue']}}</a></td>
+                              <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['RNAseqAliquotID']}}&organism=Mouse">{{ value['RNAseqAliquotID']}}</a></td>
+                              <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Mouse">{{ value['GeneName1'] }}</a></td>
+                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Mouse">{{ value['cMDT'] }}</a></td>
+                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['Transcript_Name'] }}&organism=Mouse">{{ value['Transcript_Name'] }}</a></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -109,7 +109,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Number of detected cMDTs in each sample
+                        <i class="fas fa-table mr-1"></i> Number of detected dMDTs in each sample
                     </div>
                     <div class="table-responsive">
                     <div id="toolbar2" class="select">
@@ -209,8 +209,8 @@
                     field: 'Gene Name',
                     title: 'Gene Name'
                   }, {
-                    field: 'cMDT',
-                    title: 'cMDT'
+                    field: 'dMDT',
+                    title: 'dMDT'
                   }, {
                     field: 'Transcript Name',
                     title: 'Transcript Name'

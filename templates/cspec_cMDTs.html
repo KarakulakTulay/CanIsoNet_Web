@@ -42,11 +42,7 @@
                   <div align="center" width="700px">
                   <h2 class= "featurette-heading">
                      CanIsoNet: <span class = "text-muted"> Disease-specific Isoform Interaction Network </span>
-                     <h6> CanIsoNet serves as a gateway to understand the functional role of disease-specific isoform switching events. We provide two main functionalities for the users:
-                     <br>
-                       1. Browsing various statistics on disease-specific isoform switching events
-                      <br>
-                       2. Exploring and visualising isoform-specific network disruptions in the STRING interaction network </h6>
+                     <h6> CanIsoNet serves as a gateway to understand the functional role of disease-specific isoform switching events.
                     </div>
                 </div>
             </div>
@@ -80,12 +76,12 @@
                    {% for value in temp_dict %}
                    <tr>
                        <td><a href="Cancer?cancer={{ value['CancerType']}}">{{ value['CancerType']}}</a></td>
-                       <td><a href="Transcript?enst={{ value['cMDT']}}">{{ value['cMDT']}}</a></td>
-                       <td><a href="Gene?enst={{ value['GeneName']}}">{{ value['GeneName']}}</a></td>
+                       <td><a href="Transcript?enst={{ value['cMDT']}}&organism=Human">{{ value['cMDT']}}</a></td>
+                       <td><a href="Gene?enst={{ value['GeneName']}}&organism=Human">{{ value['GeneName']}}</a></td>
                        <td>{{ value['Count']}}</td>
                        <td>{{ value['Total']}}</td>
                        <td>{{ value['Frequency']}}</td>
-                       <td><a href="Transcript?enst={{ value['cMDT']}}">{{ value['Transcript_Name']}}</a></td>
+                       <td><a href="Transcript?enst={{ value['cMDT']}}&organism=Human">{{ value['Transcript_Name']}}</a></td>
                    </tr>
                    {% endfor %}
                </table>

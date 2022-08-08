@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
-    <title> CanIsoNet beta-version</title>
+    <title> CanIsoNet </title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMXDYWMED4"></script>
     <script>
@@ -46,11 +46,12 @@
     <div class="row">
       <div class="col-xl-12">
           <div class="card mb-4">
-              <div class="card-header">
+              <div class="card-header text-white" style="background-color: #757575;">
                   <i class="fas fa-chart-bar mr-1"></i> ENST Interaction Network
               </div>
             <div class="card-body">
                 <div id="stringEmbedded"></div>
+                    <p id='inside_text' </p>
                     <figure>
                         <img src="{{ url_for('static', filename='images/string_signs_genes.png')}}" class="figure-img img-fluid rounded" style="max-width: 15%">
                     </figure>
@@ -64,22 +65,21 @@
     <div class="row">
       <div class="col-xl-12">
           <div class="card mb-4">
-          <div class="card-header">
+          <div class="card-header text-white" style="background-color: #757575;">
               <i class="fas fa-chart-pie mr-1"></i> Interaction Lost Information on Different Transcripts of the Gene
           </div>
           <div class="table-responsive">
-            <table id="dataTable2" class="table table-bordered table-striped table-hover" width="100%" data-toggle="table" cellspacing="0"  data-search="true" data-height="400" data-show-export="true" data-page-size="5" data-total-rows="50">
-                <thead class="thead-dark">
-                *having domain-domain interaction
+            <table id="dataTable2" class="table table-bordered table-striped table-hover" width="100%" data-toggle="table" data-pagination="true" data-sortable="true" data-show-toggle="true" data-show-columns="true" data-toolbar="#toolbar" cellspacing="0"  data-search="true" data-height="400" data-show-export="true" data-click-to-select="true" data-page-size="5" data-total-rows="50">
+                <thead class="thead-light">
+                <h6> *only proteins having domain-domain interaction information are taken into consideration </h6>
                   <tr>
-                      <th scope="col">Gene<br>Name</th>
-                      <th scope="col"># of<br>Interaction*</th>
-                      <th scope="col"># of Missed<br>Interaction</th>
-                      <th scope="col">Interaction<br>Lost</th>
-                      <th scope="col">Domain Int<br>Lost</th>
-                      <th scope="col">cMDT</th>
-                      <th scope="col">Transcript Name</th>
-                    <!--  <th scope="col">String Density<br>Score</th> -->
+                      <th scope="col" data-sortable="true">Gene<br>Name</th>
+                      <th scope="col" data-sortable="true"># of<br>Interaction*</th>
+                      <th scope="col" data-sortable="true"># of Missed<br>Interaction</th>
+                      <th scope="col" data-sortable="true">Interaction<br>Lost</th>
+                      <th scope="col" data-sortable="true">Domain Int<br>Lost</th>
+                      <th scope="col" data-sortable="true">Transcript Name</th>
+                      <th scope="col" data-sortable="true">dMDT</th>
                   </tr>
               </thead>
              {% for value in data_statistics %}
@@ -95,11 +95,11 @@
                     <td><b><a href="http://pfam.xfam.org/family/{{ value['Domain1'] }}">{{ value['Domain1'] }}</b>({{ value['Region1'] }})-<a href="http://pfam.xfam.org/family/{{ value['Domain2'] }}">{{ value['Domain2'] }}</td>
                     {% endif %}
                     {% if 'ENST' in value['DomCancerTrans'] %}
-                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
                     <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['Transcript_Name'] }}</a></td>
+                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
                     {% else %}
-                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['DomCancerTrans'] }}</a></td>
                     <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['Transcript_Name'] }}</a></td>
+                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['DomCancerTrans'] }}</a></td>
                     {% endif %}
                 </tr>
                 {% endfor %}
@@ -122,11 +122,14 @@
         </div>
         <div class="col-xl-6">
             <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-chart-pie mr-1"></i> Statistics on cMDT
+                <div class="card-header text-white" style="background-color: #757575;">
+                    <i class="fas fa-chart-pie mr-1"></i> Statistics on dMDT
                 </div>
             <div class="card-body">
                 <div class="chart js-plotly-plot" id="sample_graph"></div>
+                <div>
+                 <p>*Transcripts of this gene has been found as dMDT in these cancer types</p>
+                </div>
             </div>
         </div>
         </div>
@@ -135,7 +138,7 @@
   <div class="row">
           <div class="col-xl-12">
               <div class="card mb-4">
-                  <div class="card-header">
+                  <div class="card-header text-white" style="background-color: #757575;">
                       <i class="fas fa-table mr-1"></i> Interaction Lost of Different Transcript of Gene
                   </div>
                   <div class="table-responsive">
@@ -145,15 +148,15 @@
                         <option value="all">Export All</option>
                       </select>
                     </div>
-                      <table id="dataTable" class="table table-bordered table-striped" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" data-search="true" data-height="600" data-show-export="true" data-page-size="10" data-pagination="true" data-show-multi-sort="true" data-total-rows="50">
-                          <thead class="thead-dark">
+                      <table id="dataTable" class="table table-bordered table-striped" data-click-to-select="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" data-search="true" data-height="600" data-show-export="true" data-page-size="10" data-pagination="true" data-sortable="true" data-total-rows="50">
+                          <thead class="thead-light">
                             <tr>
-                              <th scope="col">Sample ID</th>
-                              <th scope="col">Cancer Type</th>
-                              <th scope="col">Gene Name 1</th>
-                              <th scope="col">Gene Name 2</th>
-                              <th scope="col">cMDT</th>
-                              <th scope="col"> Transcript Name</th>
+                              <th scope="col" data-sortable="true">Sample ID</th>
+                              <th scope="col" data-sortable="true">Disease</th>
+                              <th scope="col" data-sortable="true">Gene Name 1</th>
+                              <th scope="col" data-sortable="true">Gene Name 2</th>
+                              <th scope="col" data-sortable="true"> Transcript Name</th>
+                              <th scope="col" data-sortable="true">dMDT</th>
                             </tr>
                           </thead>
                               {% for value in result %}
@@ -171,15 +174,14 @@
                                   {% if value['CancerType2'] != 'OIH' %}
                                   <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Human">{{ value['GeneName1'] }}</a></td>
                                   <td>{{ value['GeneName2'] }}</td>
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
                                   <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['Transcript_Name'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
                                   {% else %}
                                    <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Mouse">{{ value['GeneName1'] }}</a></td>
                                   <td>{{ value['GeneName2'] }}</td>
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['DomCancerTrans'] }}</a></td>
                                   <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['Transcript_Name'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['DomCancerTrans'] }}</a></td>
                                   {% endif %}
-
                               </tr>
                               {% endfor %}
                       </table>
@@ -241,7 +243,6 @@
             partner_genenames_exists = JSON.parse('{{ partner_genenames_exists | tojson  }}');
 
             partner_genenames_missed.push(protein)
-            //partner_genenames_missed.push.apply(partner_genenames_missed,partner_genenames_exists)
 
            if (partner_genenames_missed.length > 20) {
                partner_genenames_missed = JSON.parse('{{ partner_genenames | tojson  }}');
@@ -263,7 +264,13 @@
                //'add_nodes':15
                'add_white_nodes':0
            })
+
+
+            if (partner_genenames_missed.length == 1) {
+                document.getElementById("inside_text").innerHTML = 'This protein has no interaction'
+            }
        }
+
 
 
         function isonet() {
@@ -324,28 +331,40 @@
        $('#toolbar').find('select').change(function () {
          $table.bootstrapTable('destroy').bootstrapTable({
            exportDataType: $(this).val(),
-           exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+           exportTypes: ['json', 'xlsx', 'csv', 'doc', 'txt', 'sql', 'pdf'],
            columns: [
              {
-               field: 'CancerSampleId',
+               field: 'SampleID',
                title: 'SampleID'
              }, {
-               field: 'CancerType2',
-               title: 'Disease Type'
+               field: 'Disease',
+               title: 'Disease'
              }, {
-               field: 'GeneName1',
+               field: 'Gene Name',
                title: 'Gene Name'
              }, {
-               field: 'GeneName2',
+               field: 'Gene Name2',
                title: 'Gene Name2'
-             }, {
-               field: 'DomCancerTrans',
-               title: 'dominant Disase Transcript (dMDT)'
-             }, {
-               field: 'Transcript_Name',
+             },{
+               field: 'Transcript Name',
                title: 'Transcript Name'
+             }, {
+               field: 'dominant Disase Transcript (dMDT)',
+               title: 'dominant Disase Transcript (dMDT)'
              }
            ]
+         })
+       }).trigger('change')
+     })
+    </script>
+     <script>
+     var $table2 = $('#dataTable2')
+
+     $(function() {
+       $('#toolbar').find('select').change(function () {
+         $table2.bootstrapTable('destroy').bootstrapTable({
+           exportDataType: $(this).val(),
+           exportTypes: ['json', 'xlsx', 'csv', 'doc', 'txt', 'sql', 'pdf']
          })
        }).trigger('change')
      })

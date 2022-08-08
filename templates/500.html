@@ -22,7 +22,7 @@
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script> -->
@@ -50,7 +50,7 @@
             <br>
             <br>
             <br>
-            <p> Unfortunately, there is no available information for the disease/gene/isoform which is searched :( </p>
+            <p> <h6> There is no available information for the <span id="enstid"></span> transcript of <span id = "gene"></span> gene</h6></p>
             <br>
             <br>
             <br>
@@ -78,6 +78,12 @@
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+        <script language='javascript'>
+        gene = '{{ genename }}';
+        enstid = '{{ enstid }}'
+        document.getElementById('enstid').innerHTML = enstid;
+        document.getElementById('gene').innerHTML = gene;
+        </script>
         {% endblock %}
     </div>
 </body>

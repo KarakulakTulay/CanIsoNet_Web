@@ -4,7 +4,7 @@
 <head lang="en">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
-    <title> CanIsoNet beta-version</title>
+    <title> CanIsoNet </title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMXDYWMED4"></script>
     <script>
@@ -39,7 +39,7 @@
                 <div class="col-xl-12">
                     <div class="content">
                       <div align="center" width="700px">
-                      <h4 class= "featurette-heading">Cancer Type: <span id="SampleCancerType"></span></h4>
+                      <h4 class= "featurette-heading">Disease: <span id="SampleCancerType"></span></h4>
                         </div>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header text-white" style="background-color: #757575;">
                         <i class="fas fa-chart-bar mr-1"></i> Top 10 dMDT and Number of dMDTs in each samples
 
                     </div>
@@ -66,7 +66,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header text-white" style="background-color: #757575;">
                         <i class="fas fa-table mr-1"></i> Transcripts found as dMDT in Disease
                     </div>
                     <div class="table-responsive">
@@ -78,13 +78,13 @@
                       </select>
                     </div>
                         <table id="dataTable" class="table table-bordered table-striped"  width="100%" data-toggle="table" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" cellspacing="0" data-height="500" data-search="true"  data-total-rows="50">
-                            <thead class="thead-dark">
+                            <thead class="thead-light">
                                 <tr>
-                                    <th>Cancer Type</th>
-                                    <th>Sample ID</th>
-                                    <th>Gene Name</th>
-                                    <th>dMDT</th>
-                                    <th>Transcript Name</th>
+                                    <th data-sortable="true">Disease</th>
+                                    <th data-sortable="true">Sample ID</th>
+                                    <th data-sortable="true">Gene Name</th>
+                                    <th data-sortable="true">dMDT</th>
+                                    <th data-sortable="true">Transcript Name</th>
                                 </tr>
                             </thead>
                             {% for value in data %}
@@ -106,7 +106,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header text-white" style="background-color: #757575;">
                         <i class="fas fa-table mr-1"></i> Number of dMDTs in each sample
                     </div>
                     <div class="table-responsive">
@@ -117,11 +117,11 @@
                       </select>
                     </div>
                         <table id="dataTable2" class="table table-bordered table-striped" width="100%" data-toggle="table" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar2" data-show-toggle="true" data-show-columns="true" cellspacing="0" data-height="500" data-search="true"  data-total-rows="50">
-                            <thead class="thead-dark">
+                            <thead class="thead-light">
                                 <tr>
-                                    <th>Cancer Type</th>
-                                    <th>Sample ID</th>
-                                    <th>Number Of dMDTs</th>
+                                    <th data-sortable="true">Disease</th>
+                                    <th data-sortable="true">Sample ID</th>
+                                    <th data-sortable="true">Number Of dMDTs</th>
                                 </tr>
                             </thead>
                             {% for value in data2 %}
@@ -166,7 +166,7 @@
     </script>
     <script type="text/javascript">
         var plot = {{ graphJSON | safe }};
-        Plotly.plot('sample_graph', plot, {}, {responsive: true});
+        Plotly.plot('sample_graph', plot, {});
     </script>
     <script>
           var $table2 = $('#dataTable2')
@@ -175,11 +175,11 @@
             $('#toolbar2').find('select').change(function () {
               $table2.bootstrapTable('destroy').bootstrapTable({
                 exportDataType: $(this).val(),
-                exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+                exportTypes: ['json', 'xlsx', 'csv', 'doc', 'txt', 'sql', 'pdf'],
                 columns: [
                   {
-                    field: 'Cancer Type',
-                    title: 'Cancer Type'
+                    field: 'Disease',
+                    title: 'Disease'
                   }, {
                     field: 'Sample ID',
                     title: 'Sample ID'
@@ -199,11 +199,11 @@
             $('#toolbar').find('select').change(function () {
               $table.bootstrapTable('destroy').bootstrapTable({
                 exportDataType: $(this).val(),
-                exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+                exportTypes: ['json', 'xlsx', 'csv', 'doc', 'txt', 'sql', 'pdf'],
                 columns: [
                   {
-                    field: 'CancerType',
-                    title: 'Cancer Type'
+                    field: 'Disease',
+                    title: 'Disease'
                   }, {
                     field: 'Sample ID',
                     title: 'Sample ID'

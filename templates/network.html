@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
-    <title> CanIsoNet beta-version</title>
+    <title> CanIsoNet </title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMXDYWMED4"></script>
     <script>
@@ -51,11 +51,12 @@
     <div class="row">
       <div class="col-xl-12">
           <div class="card mb-4">
-              <div class="card-header">
+              <div class="card-header text-white" style="background-color: #757575;">
                   <i class="fas fa-chart-bar mr-1"></i> dMDT Interaction Network
               </div>
             <div class="card-body">
                   <div id="stringEmbedded"></div>
+                    <p id='inside_text' </p>
                     <figure>
                         <img src="{{ url_for('static', filename='images/string_signs.png')}}" class="figure-img img-fluid rounded" style="max-width: 15%">
                     </figure>
@@ -69,31 +70,31 @@
     <div class="row">
       <div class="col-xl-12">
           <div class="card mb-4">
-          <div class="card-header">
+          <div class="card-header text-white" style="background-color: #757575;">
               <i class="fas fa-table mr-1"></i> Protein interaction lost due to MDT switch
           </div>
           <div class="table-responsive">
             <table id="dataTable2" class="table table-bordered table-striped" width="100%" data-toggle="table" cellspacing="0"  data-search="true" data-height="400" data-show-export="true" data-page-size="20" data-total-rows="50" data-pagination="true" >
-                <h6> *having domain-domain interaction information</h6>
-                <thead class="thead-dark">
+                <h6>*only proteins having domain-domain interaction information are taken into consideration </h6>
+                <h6>Number of Total Interaction: <span id="TotalInt"></span></h6>
+                <h6>Number of Lost Interaction: <span id="LostInt"></span></h6>
+                <thead class="thead-light">
                   <tr>
-                      <th scope="col">Gene<br>Name</th>
-                      <th scope="col">Number of<br>Interaction*</th>
-                      <th scope="col"># of Lost<br>Interaction</th>
-                      <th scope="col">Interaction<br>Lost</th>
-                      <th scope="col">Lost<br>Domain<-->Domain Int</th>
+                      <th scope="col" data-sortable="true">Gene Name</th>
+                      <th scope="col" data-sortable="true">Interaction Lost</th>
+                      <th scope="col" data-sortable="true">Lost Domain (Region)</th>
+                      <th scope="col" data-sortable="true">Lost Domain<-->Domain Interaction</th>
                   </tr>
               </thead>
              {% for value in data_statistics %}
                 <tr>
                     <td>{{ value['GeneName1'] }}</td>
-                    <td>{{ value['NumberOfStringInt'] }}</td>
-                    <td>{{ value['Sum'] }}</td>
                     {% if value['GeneName2'] == "-" %}
                     <td>None</td>
                     <td>None</td>
                     {% else %}
                     <td><b>{{ value['GeneName1'] }}</b>-{{ value['GeneName2'] }}</td>
+                    <td><b><a href="http://pfam.xfam.org/family/{{ value['Domain1'] }}">{{ value['Domain1'] }}</b>({{ value['Region1'] }})</td>
                     <td><b><a href="http://pfam.xfam.org/family/{{ value['Domain1'] }}">{{ value['Domain1'] }}</b>({{ value['Region1'] }})--<a href="http://pfam.xfam.org/family/{{ value['Domain2'] }}">{{ value['Domain2'] }}</td>
                     {% endif %}
                 </tr>
@@ -117,11 +118,12 @@
         </div>
     <div class="col-xl-8">
       <div class="card mb-4">
-      <div class="card-header">
+      <div class="card-header text-white" style="background-color: #757575;">
           <i class="fas fa-chart-pie mr-1"></i> Statistics on dMDT
       </div>
       <div class="card-body">
         <div class="chart js-plotly-plot" id="sample_graph" data-height="500" data-search="true"></div>
+        *This transcript has been found as a dMDT in these diseases
       </div>
     </div>
     </div>
@@ -129,7 +131,7 @@
         <div class="row">
           <div class="col-xl-12">
               <div class="card mb-4">
-                  <div class="card-header">
+                  <div class="card-header text-white" style="background-color: #757575;">
                       <i class="fas fa-table mr-1"></i> Protein Interaction Lost due to the MDT switch in all disease types
                   </div>
                   <div class="table-responsive">
@@ -140,14 +142,14 @@
                       </select>
                     </div>
                       <table id="dataTable" class="table table-bordered table-striped" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" data-search="true" data-height="400" data-show-export="true" data-page-size="10" data-pagination="true" data-show-multi-sort="true" data-total-rows="50">
-                          <thead class="thead-dark">
+                          <thead class="thead-light">
                             <tr>
-                              <th scope="col">Sample ID</th>
-                              <th scope="col">Disease Type</th>
-                              <th scope="col">Gene Name 1</th>
-                              <th scope="col">Gene Name 2</th>
-                              <th scope="col">dMDT</th>
-                              <th scope="col"> Transcript Name</th>
+                              <th scope="col" data-sortable="true">Sample ID</th>
+                              <th scope="col" data-sortable="true">Disease Type</th>
+                              <th scope="col" data-sortable="true">Gene Name 1</th>
+                              <th scope="col" data-sortable="true">Gene Name 2</th>
+                              <th scope="col" data-sortable="true"> Transcript Name</th>
+                              <th scope="col" data-sortable="true">dMDT</th>
                             </tr>
                           </thead>
                               {% for value in data %}
@@ -170,11 +172,11 @@
                                   <td>{{ value['GeneName2'] }}</td>
                                   {% endif %}
                                   {% if value['CancerType2'] != 'OIH' %}
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
                                   <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['Transcript_Name'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
                                   {% else %}
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['DomCancerTrans'] }}</a></td>
                                   <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['Transcript_Name'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['DomCancerTrans'] }}</a></td>
                                   {% endif %}
                               </tr>
                               {% endfor %}
@@ -187,7 +189,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header text-white" style="background-color: #757575;">
                         <i class="fas fa-table mr-1"></i> Protein Interaction Lost with Proteins annotated in Clinvar
                     </div>
                     <div class="table-responsive">
@@ -198,7 +200,7 @@
                           </select>
                         </div>
                         <table id="dataTable3" class="table table-bordered table-striped" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar3" data-show-toggle="true" data-show-columns="true" data-search="true" data-height="400" data-show-export="true" data-page-size="10" data-pagination="true" data-show-multi-sort="true" data-total-rows="50">
-                            <thead class="thead-dark">
+                            <thead class="thead-light">
                                 <th scope="col">Gene Name</th>
                             </thead>
                                  {% for value in clinvar_dict2 %}
@@ -286,6 +288,13 @@
         var cgc_array = [];
         function isonet() {
 
+            TotalInt = '{{ TotalInt }}'
+            document.getElementById('TotalInt').innerHTML = TotalInt;
+
+            LostInt = '{{ LostInt }}'
+            document.getElementById('LostInt').innerHTML = LostInt;
+
+
             string_score = '{{ string_score }}'
             document.getElementById('string_score').innerHTML = string_score;
 
@@ -320,6 +329,9 @@
             }
 
 
+            if (partner_genenames.length == 0) {
+                document.getElementById("inside_text").innerHTML = 'This protein has no interaction'
+            }
 
             for (k = 0; k < partner_genenames.length; k++) {
 
@@ -413,7 +425,7 @@
        $('#toolbar').find('select').change(function () {
          $table.bootstrapTable('destroy').bootstrapTable({
            exportDataType: $(this).val(),
-           exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+           exportTypes: ['json', 'xlsx', 'csv', 'doc', 'txt', 'sql', 'pdf'],
            columns: [
              {
                field: 'CancerSampleId',
@@ -428,11 +440,11 @@
                field: 'GeneName2',
                title: 'Gene Name2'
              }, {
-               field: 'DomCancerTrans',
-               title: 'dMDT'
-             }, {
                field: 'Transcript_Name',
                title: 'Transcript Name'
+             }, {
+               field: 'DomCancerTrans',
+               title: 'dMDT'
              }
            ]
          })
@@ -445,7 +457,7 @@
        $('#toolbar3').find('select').change(function () {
          $table2.bootstrapTable('destroy').bootstrapTable({
            exportDataType: $(this).val(),
-           exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+           exportTypes: ['json', 'xlsx', 'csv', 'doc', 'txt', 'sql', 'pdf'],
            columns: [
              {
                field: 'Gene Name',
@@ -456,6 +468,19 @@
        }).trigger('change')
      })
     </script>
+    <script>
+     var $table3 = $('#dataTable2')
+
+     $(function() {
+       $('#toolbar').find('select').change(function () {
+         $table3.bootstrapTable('destroy').bootstrapTable({
+           exportDataType: $(this).val(),
+           exportTypes: ['json', 'xlsx', 'csv', 'doc', 'txt', 'sql', 'pdf']
+         })
+       }).trigger('change')
+     })
+    </script>
+
     <script type="text/javascript">
         var plot = {{  graphJSON2 | safe }};
         Plotly.plot('sample_graph', plot, {});

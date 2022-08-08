@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
-    <title> CanIsoNet beta-version </title>
+    <title> CanIsoNet </title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMXDYWMED4"></script>
     <script>
@@ -22,7 +22,7 @@
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
@@ -97,16 +97,16 @@
             <div class="col-xl-12">
             <div class="card mb-4">
                 <div class="table-responsive">
-                    <div class="card-header">
-                        <i class="fas fa-table mr-1"></i> Browse A Disease Type
+                    <div class="card-header text-white" style="background-color: #757575;">
+                        <i class="fas fa-table mr-1"></i> Browse A Disease
                     </div>
            <!--  <p> To detect cMDTs, the following 27 different cancer types has been used in our analysis. </p> -->
                <table id="dataTable" class="table table-bordered table-striped" width="100%" data-toggle="table" cellspacing="0" data-height="800" data-show-export="true"  data-search="true"  data-page-size="10" data-total-rows="50">
-                   <thead class="thead-dark">
+                   <thead class="thead-light">
                        <tr>
-                           <th>Project Code</th>
-                           <th>Disease Name</th>
-                           <th>Dataset</th>
+                           <th data-sortable="true">Project Code</th>
+                           <th data-sortable="true">Disease Name</th>
+                           <th data-sortable="true">Dataset</th>
                        </tr>
                    </thead>
                    {% for value in data %}
@@ -247,7 +247,13 @@
                 $(document).ready(function(){
                 	$("#isoform_return a").click(function(){
                 		var value = $(this).html();
-                		if (value == '#1') {var new_value_iso = 'BRCA1-201'} else {var new_value_iso = 'ENST00000374650'};
+                		if (value == '#1') {
+                		    var new_value_iso = 'BRCA1-201';
+                		    $(document.getElementById('Human').checked = true)
+                		} else {
+                		    var new_value_iso = 'ENST00000374650';
+                		    $(document.getElementById('Human').checked = true)
+                		};
                         var input2 = $('#isotakeinput');
                         input2.val(new_value_iso);
                 	});
@@ -257,12 +263,21 @@
                 $(document).ready(function(){
                 	$("#gene_example_return a").click(function(){
                 		var value = $(this).html();
-                		if (value == '#1') {var new_value = 'BRCA1'} else {var new_value = 'CASP10'};
+                		if (value == '#1') {
+                		    var new_value = 'BRCA1';
+                		    $(document.getElementById('Human').checked = true)
+
+                		} else {
+                		    var new_value = 'CASP10';
+                		    $(document.getElementById('Human').checked = true)
+
+                		};
                         var input = $('#genetakeinput');
                         input.val(new_value);
                 	});
                 });
             </script>
+
         {% endblock %}
     </div>
 </body>

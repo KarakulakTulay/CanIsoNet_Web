@@ -4,7 +4,7 @@
 <head>
 
     <meta charset="utf-8">
-    <title> CanIsoNet beta-version</title>
+    <title> CanIsoNet </title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMXDYWMED4"></script>
@@ -49,10 +49,10 @@
         </div>
             <div class="row">
             <div class="col-xl-12">
-            <b><p> This table shows the frequency of cancer specific cMDTs which corresponding to transcripts found as cMDTs in a specific cancer type and not in the others.</p></b>
+            <b><p> This table shows the frequency of cancer type specific dMDTs which corresponding to transcripts found as dMDTs in a specific cancer type and not in the others. </p></b>
             <div class="card mb-4">
                 <div class="table-responsive">
-                    <div class="card-header">
+                    <div  class="card-header text-white" style="background-color: #757575;">
                         <i class="fas fa-table mr-1"></i> Browse Cancer Types
                     </div>
                 <div id="toolbar" class="select">
@@ -62,15 +62,15 @@
                   </select>
                 </div>
                <table id="dataTable" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" data-search="true" data-height="600" data-show-export="true" data-page-size="10" data-pagination="true" data-show-multi-sort="true" data-total-rows="50">
-                   <thead class="thead-dark">
+                   <thead class="thead-light">
                        <tr>
-                           <th>CancerType</th>
-                           <th>cMDT</th>
-                           <th>GeneName</th>
-                           <th>Count</th>
-                           <th>Total</th>
-                           <th>Frequency</th>
-                           <th>Transcript Name</th>
+                           <th data-sortable="true">CancerType</th>
+                           <th data-sortable="true">dMDT</th>
+                           <th data-sortable="true">GeneName</th>
+                           <th data-sortable="true">Count</th>
+                           <th data-sortable="true">Total</th>
+                           <th data-sortable="true">Frequency</th>
+                           <th data-sortable="true">Transcript Name</th>
                        </tr>
                    </thead>
                    {% for value in temp_dict %}
@@ -135,8 +135,8 @@
                     field: 'CancerType',
                     title: 'Cancer Type'
                   }, {
-                    field: 'cMDT',
-                    title: 'cMDT'
+                    field: 'dMDT',
+                    title: 'dMDT'
                   }, {
                     field: 'GeneName',
                     title: 'Gene Name'

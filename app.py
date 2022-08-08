@@ -158,7 +158,7 @@ def CancerSpecific(SampleCancerType):
     cMDT_mdts_muts = cur2.fetchall()
     cMDT_dist = pd.DataFrame(cMDT_mdts_muts, columns=['CancerType', 'SampleID','NumberOfMDTs'])
 
-    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 Transcripts", "Distribiton of cMDTs Across Samples"))
+    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 dMDT", "Number of dMDTs"))
 
     trace1 = go.Bar(
                 name = '% of ENSTs across ' + SampleCancerType,
@@ -167,14 +167,14 @@ def CancerSpecific(SampleCancerType):
                 y=result.iloc[:,1]*100
             )
 
-    trace2 = go.Box(y=cMDT_dist.NumberOfMDTs,boxpoints='outliers',jitter=0.3, name = 'Distribution of cMDT Counts in Samples',
-                    marker_color = '#00CC96')
+    trace2 = go.Box(y=cMDT_dist.NumberOfMDTs,boxpoints='outliers',jitter=0.3,
+                    marker_color = '#00CC96', name=' ')
 
     plot.append_trace(trace1, row=1, col=1)
     plot.update_yaxes(title_text="Occurence of Transcripts in Samples (%)", row=1, col=1)
-
     plot.append_trace(trace2, row=1, col=2)
-    plot.update_yaxes(title_text="cMDT Counts across samples", row=1, col=2)
+    plot.update_yaxes(title_text="Distribiton of dMDTs Across Samples", row=1, col=2)
+    plot.update_xaxes(title_text=' ', row=1, col=2)
     plot.update_layout(showlegend=False)
 
     graphJSON = json.dumps(plot, cls=plotly.utils.PlotlyJSONEncoder)
@@ -220,6 +220,7 @@ def Transcript():
 
         #result = df.to_dict(orient='records')
 
+
         transcript_name = df[df.DomCancerTrans == enstid].iloc[0,15]
 
         if genename == "":
@@ -253,9 +254,12 @@ def Transcript():
             string_score = statistic_table.iloc[0,6]
             string_score = int(statistic_table.iloc[0,6]*100)
 
+            TotalInt = list(df['NumberOfStringInt'].unique())[0]
+            LostInt = list(df['Sum'].unique())[0]
+
             ### draw pie chart to show which cancers/diseases have this transcript as a MDT
             data = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}]],
-                                subplot_titles=("% Interaction Lost", "Cancer Types"))
+                                subplot_titles=("%Interaction Lost", "Cancer Types*"))
 
 
             data.add_trace(go.Pie(labels=df.drop_duplicates(subset=['CancerSampleId', 'Tissue']).Tissue), 1, 2)
@@ -406,6 +410,9 @@ def Transcript():
             statistic_table = df[['GeneName1', 'GeneName2', 'NumberOfStringInt', 'Sum', 'Domain1', 'Domain2', 'StringDensityRank1', 'Region1', 'DomCancerTrans']].drop_duplicates()
             statistics_table_dict = statistic_table.to_dict(orient='records')
 
+            TotalInt = list(df['NumberOfStringInt'].unique())[0]
+            LostInt = list(df['Sum'].unique())[0]
+
             string_score = statistic_table.iloc[0,6]
             string_score = int(statistic_table.iloc[0,6]*100)
 
@@ -513,7 +520,7 @@ def Transcript():
             clinvar_partners_df = pd.DataFrame({'GeneName':clinvar_partners})
             clinvar_dict2 = clinvar[clinvar.GeneName.isin(clinvar_partners_df.GeneName)].to_dict(orient='records')
 
-    return render_template('network.html', ensp_frame_exists=ensp_frame_exists, string_score=string_score, df_clinvar_list=df_clinvar_list, partner_genenames_exists=partner_genenames_exists, transcript_name=transcript_name, genename=genename, organism = organism, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, graphJSON2=graphJSON2, clinvar_dict=clinvar_dict, clinvar_dict2=clinvar_dict2)
+    return render_template('network.html', ensp_frame_exists=ensp_frame_exists, string_score=string_score, df_clinvar_list=df_clinvar_list, partner_genenames_exists=partner_genenames_exists, transcript_name=transcript_name, genename=genename, organism = organism, enstid=enstid, partner_genenames=partner_genenames, data=data_dict, data_statistics = statistics_table_dict, graphJSON2=graphJSON2, clinvar_dict=clinvar_dict, clinvar_dict2=clinvar_dict2, TotalInt = TotalInt, LostInt=LostInt)
 
 
 
@@ -568,7 +575,7 @@ def DiseaseSpecific(SampleDiseaseType):
     cMDT_dist = pd.DataFrame(cMDT_mdts_muts, columns=['Tissue', 'SampleID','Count'])
     cMDT_dist['Count'] = pd.to_numeric(cMDT_dist["Count"])
 
-    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 Transcripts", "Distribiton of dMDTs Across Samples"))
+    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 dMDT", "Number of dMDTs"))
 
 
     trace1 = go.Bar(
@@ -578,15 +585,15 @@ def DiseaseSpecific(SampleDiseaseType):
                 y=result.iloc[:,1]*100
             )
 
-    trace2 = go.Box(y=cMDT_dist.Count, boxpoints='outliers',jitter=0.3, name = 'Distribution of dMDT Counts in Samples',
-                    marker_color = '#00CC96')
+    trace2 = go.Box(y=cMDT_dist.Count, boxpoints='outliers',jitter=0.3,
+                    marker_color = '#00CC96', name=' ')
 
 
     plot.append_trace(trace1, row=1, col=1)
     plot.update_yaxes(title_text="Occurence of Transcripts in Samples (%)", row=1, col=1)
-
+    plot.update_yaxes(title_text="Distribiton of dMDTs Across Samples",row=1, col=2)
+    plot.update_xaxes(title_text=' ', row=1, col=2)
     plot.append_trace(trace2, row=1, col=2)
-    plot.update_yaxes(title_text="dMDT Counts across samples", row=1, col=2)
     plot.update_layout(showlegend=False)
 
     graphJSON = json.dumps(plot, cls=plotly.utils.PlotlyJSONEncoder)
@@ -1012,7 +1019,11 @@ def change_features4():
 
 @app.errorhandler(500)
 def page_not_found(e):
-    return render_template('500.html')
+
+    genename = request.args.get('gene')
+    enstid = request.args.get('enst')
+
+    return render_template('500.html', genename=genename, enstid=enstid)
 
 if __name__ == "__main__":
   app.run(debug=True)

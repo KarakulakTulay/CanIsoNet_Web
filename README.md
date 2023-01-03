@@ -14,9 +14,11 @@ CanIsoNet is freely available at [caniso.net](https://www.caniso.net/)
 ## Citation
 If you use CanIsoNet beta-version, please cite the following articles:
 
+
+Karakulak et al., [CanIsoNet: A Database to Study the Functional Impact of Isoform Switching Events in Cancer, BioRxiv, 2021](https://www.biorxiv.org/content/10.1101/2021.09.17.46)
+
 Kahraman et al., [Pathogenic impact of transcript isoform switching in 1,209 cancer samples covering 27 cancer types using an isoform-specific interaction network Scientific Reports, 2020](https://www.nature.com/articles/s41598-020-71221-5).
 
-Karakulak et al., [CanIsoNet: A Database to Study the Functional Impact of Isoform Switching Events in Cancer, BioRxiv, 2021](https://www.biorxiv.org/content/10.1101/2021.09.17.460795v1)
 
 ### Contact Us
 tuelay.karakulak@usz.ch

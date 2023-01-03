@@ -170,7 +170,8 @@
         document.getElementById('SampleDiseaseType').innerHTML = SampleDiseaseType;
 
         var image = document.getElementsByClassName("cancer_id")[0]
-        image.src = "static/images/" + SampleDiseaseType + ".png"
+        image_disease = SampleDiseaseType.split("&")[0]
+        image.src = "static/images/" + image_disease + ".png"
 
     </script>
     <script type="text/javascript">

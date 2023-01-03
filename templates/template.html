@@ -41,16 +41,13 @@
                         <a class="nav-link" href="{{ url_for('help') }}">Help</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Browse Data</a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ url_for('cspec_cMDTs') }}">Cancer-specific dMDTs</a>
-                        </div>
+                            <a class="nav-link" href="{{ url_for('dtMDTs') }}">Disease-type-specific dMDTs</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('download') }}">Download</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('upload') }}">Upload Data</a>
+                        <a class="nav-link" href="{{ url_for('contribute') }}">Collaborate</a>
                     </li>
                 </ul>
             </div>

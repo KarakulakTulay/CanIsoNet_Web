@@ -50,7 +50,13 @@
             <br>
             <br>
             <br>
-            <p> <h6> There is no available information for the <span id="enstid"></span> transcript of <span id = "gene"></span> gene</h6></p>
+            <h5>There is no available information for the gene of interest. Please try:
+            <br>
+                - adding organism into your search
+                <br>
+                - selecting a disease type from the home page
+                <br>
+                - selecting transcript or gene name from the home page </h5>
             <br>
             <br>
             <br>
@@ -79,10 +85,9 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
         <script language='javascript'>
-        gene = '{{ genename }}';
-        enstid = '{{ enstid }}'
-        document.getElementById('enstid').innerHTML = enstid;
-        document.getElementById('gene').innerHTML = gene;
+        //gene = '{{ genename }}';
+        //document.getElementById('gene').innerHTML = gene;
+
         </script>
         {% endblock %}
     </div>

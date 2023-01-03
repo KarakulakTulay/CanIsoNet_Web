@@ -49,11 +49,11 @@
         </div>
             <div class="row">
             <div class="col-xl-12">
-            <b><p> This table shows the frequency of cancer type specific dMDTs which corresponding to transcripts found as dMDTs in a specific cancer type and not in the others. </p></b>
+            <b><p> This table shows the frequency of disease-type specific dMDTs (dtMDTs) which corresponding to transcripts found as dMDTs only in one disease type and not in the others. </p></b>
             <div class="card mb-4">
                 <div class="table-responsive">
                     <div  class="card-header text-white" style="background-color: #757575;">
-                        <i class="fas fa-table mr-1"></i> Browse Cancer Types
+                        <i class="fas fa-table mr-1"></i> Browse Disease Types
                     </div>
                 <div id="toolbar" class="select">
                   <select class="form-control">
@@ -64,7 +64,7 @@
                <table id="dataTable" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" data-search="true" data-height="600" data-show-export="true" data-page-size="10" data-pagination="true" data-show-multi-sort="true" data-total-rows="50">
                    <thead class="thead-light">
                        <tr>
-                           <th data-sortable="true">CancerType</th>
+                           <th data-sortable="true">Disease Type</th>
                            <th data-sortable="true">dMDT</th>
                            <th data-sortable="true">GeneName</th>
                            <th data-sortable="true">Count</th>
@@ -75,9 +75,9 @@
                    </thead>
                    {% for value in temp_dict %}
                    <tr>
-                       <td><a href="Cancer?cancer={{ value['CancerType']}}">{{ value['CancerType']}}</a></td>
+                       <td><a href="Cancer?cancer={{ value['CancerType2']}}">{{ value['CancerType2']}}</a></td>
                        <td><a href="Transcript?enst={{ value['cMDT']}}&organism=Human">{{ value['cMDT']}}</a></td>
-                       <td><a href="Gene?enst={{ value['GeneName']}}&organism=Human">{{ value['GeneName']}}</a></td>
+                       <td><a href="Gene?gene={{ value['GeneName']}}&organism=Human">{{ value['GeneName']}}</a></td>
                        <td>{{ value['Count']}}</td>
                        <td>{{ value['Total']}}</td>
                        <td>{{ value['Frequency']}}</td>
@@ -98,11 +98,11 @@
               <div class="jumbotron">
                   <h5>   Citation: </h5>
                   <h6>   If you use CanIsoNet, please cite the following articles :</h6>
-                  <h6>Kahraman et al.,
+                  <h6> Karakulak et al., <a href="https://www.biorxiv.org/content/10.1101/2021.09.17.460795v1" target="_blank"> CanIsoNet: A Database to Study the Functional Impact of Isoform Switching Events in Cancer</a>, BioRxiv, 2021.
+                      <br>
+                      Kahraman et al.,
                       <a href="https://doi.org/10.1038/s41598-020-71221-5" target="_blank">Pathogenic impact of transcript isoform switching in 1,209 cancer samples covering 27 cancer types using an isoform-specific interaction network</a>,
                       Scientific Reports, 2020.
-                      <br>
-                      Karakulak et al., <a href="https://www.biorxiv.org/content/10.1101/2021.09.17.460795v1" target="_blank"> CanIsoNet: A Database to Study the Functional Impact of Isoform Switching Events in Cancer</a>, BioRxiv, 2021.
                   </h6>
                   <hr class="my-4">
                   <h6>   If you have any inquires about CanIsoNet:</h6>
@@ -132,8 +132,8 @@
                 exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
                 columns: [
                   {
-                    field: 'CancerType',
-                    title: 'Cancer Type'
+                    field: 'CancerType2',
+                    title: 'Disease Type'
                   }, {
                     field: 'dMDT',
                     title: 'dMDT'

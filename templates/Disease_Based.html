@@ -61,6 +61,11 @@
                     <div class="text-center">
                         <div class="spinner-border" role="status" id="loadingsymbol"></div>
                     </div>
+                    <div class="row justify-content-center">
+                        <div id='loadingtext'>
+                            <strong>Please wait, the data is being retrieved...</strong>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,15 +92,26 @@
                                     <th data-sortable="true">Gene Name</th>
                                     <th data-sortable="true">dMDT</th>
                                     <th data-sortable="true">Transcript Name</th>
+                                   <!-- <th data-sortable="true">Abundance of dMDT (TPM)</th> -->
                                 </tr>
                             </thead>
                             {% for value in data %}
                             <tr>
-                              <td><a href="Disease?disease={{ value['Tissue']}}">{{ value['Tissue']}}</a></td>
-                              <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['RNAseqAliquotID']}}&organism=Mouse">{{ value['RNAseqAliquotID']}}</a></td>
-                              <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Mouse">{{ value['GeneName1'] }}</a></td>
-                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Mouse">{{ value['cMDT'] }}</a></td>
-                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Mouse">{{ value['Transcript_Name'] }}</a></td>
+                                {% if value['Tissue'] == "OIH_NAc" or  value['Tissue'] == "OIH_TG" %}
+                                  <td><a href="Disease?disease={{ value['Tissue']}}" target="_blank">{{ value['Tissue']}}</a></td>
+                                  <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['RNAseqAliquotID']}}&organism=Mouse" target="_blank">{{ value['RNAseqAliquotID']}}</a></td>
+                                  <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Mouse" target="_blank">{{ value['GeneName1'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Mouse" target="_blank">{{ value['cMDT'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Mouse" target="_blank">{{ value['Transcript_Name'] }}</a></td>
+                                 <!-- <td>{{ value['dMDTenrichment'] }}</a></td> -->
+                              {% else %}
+                                  <td><a href="Disease?disease={{ value['Tissue']}}" target="_blank">{{ value['Tissue']}}</a></td>
+                                  <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['RNAseqAliquotID']}}" target="_blank">{{ value['RNAseqAliquotID']}}</a></td>
+                                  <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Human" target="_blank">{{ value['GeneName1'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Human" target="_blank">{{ value['cMDT'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Human" target="_blank">{{ value['Transcript_Name'] }}</a></td>
+                                 <!-- <td>{{ value['dMDTenrichment'] }}</a></td> -->
+                            {% endif %}
                             </tr>
                             {% endfor %}
                         </table>
@@ -157,11 +173,6 @@
         image.src = "static/images/" + SampleDiseaseType + ".png"
 
     </script>
-    <script>
-        $('document').ready(function() {
-              $('#loadingsymbol').fadeOut();
-        });
-    </script>
     <script type="text/javascript">
         var plot = {{ graphJSON | safe }};
         Plotly.plot('sample_graph', plot, {});
@@ -190,7 +201,8 @@
             }).trigger('change')
           })
     </script>
-
+    <br>
+    <br>
     <script>
           var $table = $('#dataTable')
           $(function() {
@@ -219,6 +231,16 @@
               })
             }).trigger('change')
           })
+    </script>
+        <script>
+        $('document').ready(function() {
+              $('#loadingsymbol').fadeOut(5000);
+        });
+    </script>
+    <script>
+        $('document').ready(function() {
+              $('#loadingtext').fadeOut(5000);
+        });
     </script>
     {% endblock %}
 

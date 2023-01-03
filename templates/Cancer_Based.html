@@ -89,11 +89,11 @@
                             </thead>
                             {% for value in data %}
                             <tr>
-                              <td><a href="Cancer?cancer={{ value['Tissue']}}">{{ value['CancerType2']}}</a></td>
-                              <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['CancerSampleId']}}">{{ value['CancerSampleId']}}</a></td>
-                              <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Human">{{ value['GeneName1'] }}</a></td>
-                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
-                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['Transcript_Name'] }}</a></td>
+                              <td><a href="Cancer?cancer={{ value['Tissue']}}" target="_blank">{{ value['CancerType2']}}</a></td>
+                              <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['CancerSampleId']}}" target="_blank">{{ value['CancerSampleId']}}</a></td>
+                              <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Human" target="_blank">{{ value['GeneName1'] }}</a></td>
+                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human" target="_blank">{{ value['DomCancerTrans'] }}</a></td>
+                              <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human" target="_blank">{{ value['Transcript_Name'] }}</a></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -126,8 +126,7 @@
                             </thead>
                             {% for value in data2 %}
                             <tr>
-                                <td><a href="Cancer?cancer={{ value['CancerType']}}">{{ value['CancerType2']}}</a></td>
-                              <!--  <td><a href="Sample?tissue={{ value['CancerType']}}&sampleid={{ value['SampleID']}}">{{ value['SampleID']}}</a></td> -->
+                                <td><a href="Cancer?cancer={{ value['CancerType']}}" target="_blank">{{ value['CancerType2']}}</a></td>
                                 <td> {{ value['SampleID'] }} </td>
                                 <td> {{ value['NumberOfMDTs'] }} </td>
                             </tr>

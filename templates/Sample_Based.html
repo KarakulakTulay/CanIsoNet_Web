@@ -23,8 +23,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-
-
+    <script>
+        $('document').ready(function() {
+              $('#loadingsymbol').fadeOut(4000);
+        });
+    </script>
+    <script>
+        $('document').ready(function() {
+              $('#loadingtext').fadeOut(4000);
+        });
+    </script>
 </head>
 
 </html>
@@ -40,22 +48,22 @@
                       <div align="center" width="700px">
                       <h5 class= "featurette-heading">Gene Name: <span id="genename"></span>
                         <br>
-                        Cancer Type: <span id="tissue"></span>
+                        Disease Type: <span id="tissue"></span>
                         <br>
                         Sample ID: <span id="CancerSampleId"></span>
                         <br>MDT:
                         {% for value in normal_trans_id_dict %}
                         {% if 'ENST' in normal_trans_id_dict[value] %}
-                            <a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ normal_trans_id_dict[value] }}">{{ normal_trans_id_dict[value] }}</a>,
+                            <a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ normal_trans_id_dict[value] }}" target="_blank">{{ normal_trans_id_dict[value] }}</a>,
                         {% else %}
-                            <a href="http://oct2014.archive.ensembl.org/Mus_musculus/Transcript/Summary?db=core;t={{ normal_trans_id_dict[value] }}">{{ normal_trans_id_dict[value] }}</a>,
+                            <a href="http://oct2014.archive.ensembl.org/Mus_musculus/Transcript/Summary?db=core;t={{ normal_trans_id_dict[value] }}" target="_blank">{{ normal_trans_id_dict[value] }}</a>,
                         {% endif %}
                         {% endfor %}
                         <br>
                         {% if 'ENST' in cancer_trans_id %}
-                        dMDT:<a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ cancer_trans_id }}">{{ cancer_trans_id }}</a></h5>
+                        dMDT:<a href="http://feb2014.archive.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={{ cancer_trans_id }}" target="_blank">{{ cancer_trans_id }}</a></h5>
                         {% else %}
-                        dMDT:<a href="http://oct2014.archive.ensembl.org/Mus_musculus/Transcript/Summary?db=core;t={{ cancer_trans_id }}">{{ cancer_trans_id }}</a></h5>
+                        dMDT:<a href="http://oct2014.archive.ensembl.org/Mus_musculus/Transcript/Summary?db=core;t={{ cancer_trans_id }}" target="_blank">{{ cancer_trans_id }}</a></h5>
                         {% endif %}
                         <br>
                     </div>
@@ -73,8 +81,12 @@
                             </div>
                             <div class="text-center">
                               <div class="spinner-border" role="status" id="loadingsymbol">
-                               <!-- <span class="sr-only">Loading...</span> -->
                               </div>
+                                <div class="row justify-content-center">
+                                    <div id= 'loadingtext'>
+                                        <strong>Please wait, the data is being retrieved...</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -115,10 +127,10 @@
         genename = url.searchParams.get("gene")
         tissuetype_gtex = url.searchParams.get("tissue")
 
-        if (tissuetype_gtex != 'OIH') {
-            tissuetype = tissuetype_gtex.split('.')[1]
-        } else {
+        if (tissuetype_gtex == 'OIH_NAc' || tissuetype_gtex == 'OIH_TG' || tissuetype_gtex == "Parkinson's disease" || tissuetype_gtex == "Alzheimer's disease" || tissuetype_gtex == "Behcet's disease") {
             tissuetype = tissuetype_gtex
+        } else {
+            tissuetype = tissuetype_gtex.split('.')[1]
         }
 
 
@@ -164,11 +176,13 @@
         };
     </script>
     <script src="{{ url_for('static', filename='js/SampleBased.js') }}"></script>
-    <script>
+    <!-- <script>
         $('document').ready(function() {
               $('#loadingsymbol').fadeOut();
+              $('#container').fadeIn();
         });
-    </script>
+    </script> -->
+
     <script type="text/javascript">
         var plot = {{ graphJSON | safe }};
         Plotly.plot('bargraph', plot, {});

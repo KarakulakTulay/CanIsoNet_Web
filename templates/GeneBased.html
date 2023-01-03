@@ -47,13 +47,13 @@
       <div class="col-xl-12">
           <div class="card mb-4">
               <div class="card-header text-white" style="background-color: #757575;">
-                  <i class="fas fa-chart-bar mr-1"></i> ENST Interaction Network
+                  <i class="fas fa-chart-bar mr-1"></i> Protein Interaction Network
               </div>
             <div class="card-body">
                 <div id="stringEmbedded"></div>
                     <p id='inside_text' </p>
                     <figure>
-                        <img src="{{ url_for('static', filename='images/string_signs_genes.png')}}" class="figure-img img-fluid rounded" style="max-width: 15%">
+                        <img src="{{ url_for('static', filename='images/string_sign_gene.png')}}" class="figure-img img-fluid rounded" style="max-width: 15%">
                     </figure>
                     <line x1=x1 y1=y1 x2=x2 y2=y2 stroke-width="1" class="line"/>
             </div>
@@ -92,14 +92,14 @@
                     <td>None</td>
                     {% else %}
                     <td><b>{{ value['GeneName1'] }}</b>-{{ value['GeneName2'] }}</td>
-                    <td><b><a href="http://pfam.xfam.org/family/{{ value['Domain1'] }}">{{ value['Domain1'] }}</b>({{ value['Region1'] }})-<a href="http://pfam.xfam.org/family/{{ value['Domain2'] }}">{{ value['Domain2'] }}</td>
+                    <td><b><a href="http://pfam.xfam.org/family/{{ value['Domain1'] }}" target="_blank">{{ value['Domain1'] }}</b>({{ value['Region1'] }})-<a href="http://pfam.xfam.org/family/{{ value['Domain2'] }}" target="_blank">{{ value['Domain2'] }}</td>
                     {% endif %}
                     {% if 'ENST' in value['DomCancerTrans'] %}
-                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['Transcript_Name'] }}</a></td>
-                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
+                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human" target="_blank">{{ value['Transcript_Name'] }}</a></td>
+                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human" target="_blank">{{ value['DomCancerTrans'] }}</a></td>
                     {% else %}
-                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['Transcript_Name'] }}</a></td>
-                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['DomCancerTrans'] }}</a></td>
+                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse" target="_blank">{{ value['Transcript_Name'] }}</a></td>
+                    <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse" target="_blank">{{ value['DomCancerTrans'] }}</a></td>
                     {% endif %}
                 </tr>
                 {% endfor %}
@@ -128,7 +128,7 @@
             <div class="card-body">
                 <div class="chart js-plotly-plot" id="sample_graph"></div>
                 <div>
-                 <p>*Transcripts of this gene has been found as dMDT in these cancer types</p>
+                 <p>*Transcripts of this gene has been found as dMDT in these disease types</p>
                 </div>
             </div>
         </div>
@@ -161,26 +161,22 @@
                           </thead>
                               {% for value in result %}
                               <tr>
-                                   {% if value['CancerType2'] != 'OIH' %}
-                                  <td><a href="Sample?sampleid={{ value['CancerSampleId']}}&gene={{ value['GeneName1']}}&tissue={{ value['Tissue']}}">{{ value['CancerSampleId']}}</a></td>
+                                  <td><a href="Sample?sampleid={{ value['CancerSampleId']}}&gene={{ value['GeneName1']}}&tissue={{ value['CancerType2']}}" target="_blank">{{ value['CancerSampleId']}}</a></td>
+                                  {% if value['CancerType2'] == 'OIH_NAc' or value['CancerType2'] == 'OIH_TG' or value['CancerType2'] == 'Alzheimer' or value['CancerType2'] == 'Parkinson' or value['CancerType2'] == 'BehcetDisease'  %}
+                                  <td><a href="Disease?disease={{ value['CancerType2']}}">{{ value['CancerType2'] }}</a></td>
                                   {% else %}
-                                  <td><a href="Sample?sampleid={{ value['CancerSampleId']}}&gene={{ value['GeneName1']}}&tissue={{ value['CancerType2']}}">{{ value['CancerSampleId']}}</a></td>
+                                  <td><a href="Cancer?cancer={{ value['CancerType2']}}" target="_blank">{{ value['CancerType2']}}</a></td>
                                   {% endif %}
-                                  {% if value['CancerType2'] != 'OIH' %}
-                                  <td><a href="Cancer?cancer={{ value['CancerType2']}}">{{ value['CancerType2']}}</a></td>
-                                  {% else %}
-                                  <td><a href="Disease?disease={{ value['CancerType2']}}">{{ value['CancerType2']}}</a></td>
-                                  {% endif %}
-                                  {% if value['CancerType2'] != 'OIH' %}
-                                  <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Human">{{ value['GeneName1'] }}</a></td>
+                                  {% if value['CancerType2'] == 'OIH_NAc' or value['CancerType2'] == 'OIH_TG'  %}
+                                  <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Mouse" target="_blank">{{ value['GeneName1'] }}</a></td>
                                   <td>{{ value['GeneName2'] }}</td>
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['Transcript_Name'] }}</a></td>
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human">{{ value['DomCancerTrans'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse" target="_blank">{{ value['Transcript_Name'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse" target="_blank">{{ value['DomCancerTrans'] }}</a></td>
                                   {% else %}
-                                   <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Mouse">{{ value['GeneName1'] }}</a></td>
+                                   <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Human" target="_blank">{{ value['GeneName1'] }}</a></td>
                                   <td>{{ value['GeneName2'] }}</td>
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['Transcript_Name'] }}</a></td>
-                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Mouse">{{ value['DomCancerTrans'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human" target="_blank">{{ value['Transcript_Name'] }}</a></td>
+                                  <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['DomCancerTrans'] }}&organism=Human" target="_blank">{{ value['DomCancerTrans'] }}</a></td>
                                   {% endif %}
                               </tr>
                               {% endfor %}
@@ -349,8 +345,8 @@
                field: 'Transcript Name',
                title: 'Transcript Name'
              }, {
-               field: 'dominant Disase Transcript (dMDT)',
-               title: 'dominant Disase Transcript (dMDT)'
+               field: 'dominant Disease Transcript (dMDT)',
+               title: 'dominant Disease Transcript (dMDT)'
              }
            ]
          })

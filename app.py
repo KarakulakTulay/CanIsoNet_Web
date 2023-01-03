@@ -25,7 +25,7 @@ def home():
 
     # get cancer types
     cur = mysql.get_db().cursor()
-    cur.execute('''SELECT * FROM cancertypesinproject''')
+    cur.execute('''SELECT * FROM cancertypesinproject ORDER BY `Disease Name`;''')
     cancer_types = cur.fetchall()
     cancertypes = pd.DataFrame(cancer_types,columns=['PCAWG-Code', 'Cancer Type Name', 'PCAWG_GTEx', 'Dataset'])
     cancertypes_dict = cancertypes.to_dict(orient='records')
@@ -56,21 +56,21 @@ def home():
 
     return render_template('home.html', data=cancertypes_dict,  data2=gene_list, data3=isoform_list, temp_dict_human=temp_dict_human, temp_dict_mouse=temp_dict_mouse, genenamecmdt_gene_tn=transcript_list)
 
-@app.route("/cspec_cMDTs")
-def cspec_cMDTs():
+@app.route("/dtMDTs")
+def dtMDTs():
 
     # get cancer specific MDTs and their frequencies of occurance
     cur = mysql.get_db().cursor()
-    cur.execute(''' SELECT CancerType, cMDT, GeneName, Count, Total, Frequency, mart_export.`Associated Transcript Name` FROM tables9 LEFT JOIN mart_export ON tables9.cMDT = mart_export.`Ensembl Transcript ID` ORDER BY Frequency DESC''')
+    cur.execute(''' SELECT CancerType, cMDT, GeneName, Count, Total, Frequency, mart_export.`Associated Transcript Name` FROM dtMDT_Frequency LEFT JOIN mart_export ON dtMDT_Frequency.cMDT = mart_export.`Ensembl Transcript ID` ORDER BY Frequency DESC''')
     TableS9_tuple = cur.fetchall()
     result = pd.DataFrame(TableS9_tuple, columns=['CancerType', 'cMDT', 'GeneName','Count',  'Total', 'Frequency', 'Transcript_Name'])
     result[['Splitted','CancerType2']] = result.CancerType.str.split('.', expand=True)
-    result2 = result[['CancerType2', 'CancerType', 'cMDT', 'GeneName','Count',  'Total', 'Frequency', 'Transcript_Name']]
+    result2 = result[['CancerType2', 'cMDT', 'GeneName','Count',  'Total', 'Frequency', 'Transcript_Name']]
     result2 = result2.astype({'Count': int, 'Total': int})
 
     temp_dict = result2.to_dict(orient='record')
 
-    return render_template('cspec_cMDTs.html', temp_dict=temp_dict)
+    return render_template('dtMDTs.html', temp_dict=temp_dict)
 
 
 @app.route("/download", methods=['GET', 'POST'])
@@ -78,10 +78,10 @@ def download():
 
     return render_template("download.html")
 
-@app.route("/upload", methods=['GET', 'POST'])
-def upload():
+@app.route("/contribute", methods=['GET', 'POST'])
+def contribute():
 
-    return render_template("upload.html")
+    return render_template("contribute.html")
 
 @app.route("/help", methods=['GET', 'POST'])
 def help():
@@ -102,7 +102,7 @@ def sample_size(TableS4):
     # plot the sample size for each disease
     x = TableS4.sort_values(by=['Total']).iloc[:,0].str.split(".", n=1, expand=True).iloc[:,1]
     y = TableS4.sort_values(by=['Total']).iloc[:,1]
-    data = [go.Bar(x=x, y=y, marker_color = 'indianred')]
+    data = [go.Bar(x=x, y=y, marker_color = 'indianred', name='Number of Disease Samples')]
     graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
 
     return graphJSON
@@ -158,13 +158,46 @@ def CancerSpecific(SampleCancerType):
     cMDT_mdts_muts = cur2.fetchall()
     cMDT_dist = pd.DataFrame(cMDT_mdts_muts, columns=['CancerType', 'SampleID','NumberOfMDTs'])
 
-    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 dMDT", "Number of dMDTs"))
+
+
+    # extract dMDT TPMs values from pcawg data - Top 10 dMDT
+    enst_list = result['cMDT'].values.tolist()
+    tissue = request.args.get('cancer')
+    pcawg = '_pcawg'
+
+    tissuetype = tissue.split('.')[1].replace('-','_')
+
+    enst_tpms = mysql.get_db().cursor()
+    my_tissue2 = tissuetype + pcawg
+    result_enst_tpms = pd.DataFrame()
+    for eachdMDT in enst_list:
+        enst_tpms_sql = ''' SELECT * FROM ''' + my_tissue2 + ''' WHERE Feature REGEXP %s '''
+        enst_tpms_adr = (eachdMDT,)
+        enst_tpms.execute(enst_tpms_sql, enst_tpms_adr)
+        enst_tpms_tuple = enst_tpms.fetchall()
+        result_enst_tpms_df = pd.DataFrame(enst_tpms_tuple)
+        result_enst_tpms = result_enst_tpms.append(result_enst_tpms_df, ignore_index = True)
+
+    medians_each_row_list = []
+    result_enst_tpms_TPMs = result_enst_tpms.iloc[:,1:]
+
+    medians_each_row = result_enst_tpms_TPMs.median(axis=1)
+
+    medians_each_row_list = medians_each_row.values.tolist()
+    medians_rounds = [round(number, 2) for number in medians_each_row_list]
+    medians_rounds_text = ["Median TPM: " + str(item) for item in medians_rounds]
+
+    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 dMDT [The values on barplots show the median TPM values of transcripts]", "Number of dMDTs"))
+
 
     trace1 = go.Bar(
                 name = '% of ENSTs across ' + SampleCancerType,
                 marker_color = 'indianred',
                 x=result.iloc[:,3],
-                y=result.iloc[:,1]*100
+                y=result.iloc[:,1]*100,
+                text = medians_rounds,
+                hovertext = medians_rounds_text,
+                textposition='inside'
             )
 
     trace2 = go.Box(y=cMDT_dist.NumberOfMDTs,boxpoints='outliers',jitter=0.3,
@@ -201,18 +234,36 @@ def Transcript():
     if organism == 'Human':
         # Query interactiondisruptionindominanttranscripts from mysql table
         cur2 = mysql.get_db().cursor()
+        cur_disease = mysql.get_db().cursor()
         sql = ''' SELECT Tissue, ENSG, NumberOfGtexMDIs, GeneName1, GeneName2, TotalNumberOfStringInt, NumberOfUniqMissedInteractionsOfDomCancerTrans, Pfam1, Domain1, Pfam2, Domain2, CancerSampleId,
                     DomCancerTrans, StringDensityRank1, Region1, mart_export.`Associated Transcript Name` FROM interactionDisruptionInDominantTranscripts_int_anno_Human
                     LEFT JOIN mart_export ON interactionDisruptionInDominantTranscripts_int_anno_Human.DomCancerTrans = mart_export.`Ensembl Transcript ID`
                     WHERE interactionDisruptionInDominantTranscripts_int_anno_Human.DomCancerTrans = %s '''
+
+        sql_disease = ''' SELECT Tissue, ENSG, NumberOfGtexMDT, GeneName1, GeneName2, TotalNumberOfStringInt, cMDTnumberOfUniqMissedInt, Pfam1, Domain1, Pfam2, Domain2, RNAseqAliquotID,
+                    cMDT, StringDensityRank1, Region1, mart_export.`Associated Transcript Name` FROM interactionDisruptionInDominantTranscripts_Human_Disease
+                    LEFT JOIN mart_export ON interactionDisruptionInDominantTranscripts_Human_Disease.cMDT = mart_export.`Ensembl Transcript ID`
+                    WHERE interactionDisruptionInDominantTranscripts_Human_Disease.cMDT = %s '''
+
         adr = (enstid,)
         cur2.execute(sql, adr)
+        cur_disease.execute(sql_disease, adr)
+
         isonet_tuple = cur2.fetchall()
+        isonet_tuple_disease = cur_disease.fetchall()
+
         df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'ENSG', 'NumberOfGtexMDIs', 'GeneName1', 'GeneName2',
                                                 'TotalNumberOfStringInt', 'NumberOfUniqMissedInteractionsOfDomCancerTrans',
                                                 'Pfam1', 'Domain1', 'Pfam2', 'Domain2', 'CancerSampleId', 'DomCancerTrans',
                                                 'StringDensityRank1','Region1', 'Transcript_Name'])
 
+        df_disease = pd.DataFrame(isonet_tuple_disease, columns=['Tissue', 'ENSG', 'NumberOfGtexMDIs', 'GeneName1', 'GeneName2',
+                                                'TotalNumberOfStringInt', 'NumberOfUniqMissedInteractionsOfDomCancerTrans',
+                                                'Pfam1', 'Domain1', 'Pfam2', 'Domain2', 'CancerSampleId', 'DomCancerTrans',
+                                                'StringDensityRank1','Region1', 'Transcript_Name'])
+
+
+        df = pd.concat([df, df_disease])
         df = df.rename(columns={'ENSG': 'ENSGid', 'NumberOfUniqMissedInteractionsOfDomCancerTrans': 'MissedInteractions','TotalNumberOfStringInt': 'NumberOfStringInt'})
         df['Domain1'].replace({"-":"None"},inplace=True)
         df['Domain2'].replace({"-":"None"},inplace=True)
@@ -240,7 +291,9 @@ def Transcript():
             clinvar = df_clinvar.drop_duplicates()
             clinvar_dict = clinvar.to_dict(orient='records')
 
-            df[['Splitted','CancerType2']] = df.Tissue.str.split('.', expand=True)
+
+            df = df.rename(columns={'Tissue':'CancerType2'})
+
             df = df.drop_duplicates()
             data_dict = df.to_dict(orient='records')
 
@@ -259,10 +312,10 @@ def Transcript():
 
             ### draw pie chart to show which cancers/diseases have this transcript as a MDT
             data = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}]],
-                                subplot_titles=("%Interaction Lost", "Cancer Types*"))
+                                subplot_titles=("%Interaction Lost", "Disease Types*"))
 
 
-            data.add_trace(go.Pie(labels=df.drop_duplicates(subset=['CancerSampleId', 'Tissue']).Tissue), 1, 2)
+            data.add_trace(go.Pie(labels=df.drop_duplicates(subset=['CancerSampleId', 'CancerType2']).CancerType2), 1, 2)
 
             data.update_traces(selector=dict(type='pie'), textinfo='label+text',hoverinfo='label+percent',
                                       marker=dict(line=dict(color='#000000', width=4)))
@@ -358,6 +411,8 @@ def Transcript():
 
 
             clinvar_partners = [eachpartner for eachpartner in partner_genenames if eachpartner in df_clinvar_list]
+            if genename in df_clinvar_list:
+                clinvar_partners.append(genename)
             clinvar_partners_df = pd.DataFrame({'GeneName':clinvar_partners})
             clinvar_dict2 = clinvar[clinvar.GeneName.isin(clinvar_partners_df.GeneName)].to_dict(orient='records')
 
@@ -367,9 +422,9 @@ def Transcript():
         # Query interactiondisruptionindominanttranscripts from mysql table
         cur2 = mysql.get_db().cursor()
         sql = ''' SELECT Tissue, ENSG, NumberOfGTExMDT, GeneName1, GeneName2, TotalNumberOfSTRINGint, cMDTnumberOfUniqMissedInt, NumberOfCommonMissedInt, Pfam1, Domain1, Pfam2, Domain2, RNAseqAliquotID,
-                    cMDT, StringDensityRank1, Region1, mart_export_mouse.Transcript_Name FROM interactionDisruptionInDominantTranscripts_int_anno_OIH
-                    LEFT JOIN mart_export_mouse ON interactionDisruptionInDominantTranscripts_int_anno_OIH.cMDT = mart_export_mouse.ENSMUST
-                    WHERE interactionDisruptionInDominantTranscripts_int_anno_OIH.cMDT = %s '''
+                    cMDT, StringDensityRank1, Region1, mart_export_mouse.Transcript_Name FROM interactionDisruptionInDominantTranscripts_Mouse
+                    LEFT JOIN mart_export_mouse ON interactionDisruptionInDominantTranscripts_Mouse.cMDT = mart_export_mouse.ENSMUST
+                    WHERE interactionDisruptionInDominantTranscripts_Mouse.cMDT = %s '''
         adr = (enstid,)
         cur2.execute(sql, adr)
         isonet_tuple = cur2.fetchall()
@@ -517,6 +572,8 @@ def Transcript():
 
 
             clinvar_partners = [eachpartner for eachpartner in partner_genenames if eachpartner in df_clinvar_list]
+            if genename in df_clinvar_list:
+                clinvar_partners.append(genename)
             clinvar_partners_df = pd.DataFrame({'GeneName':clinvar_partners})
             clinvar_dict2 = clinvar[clinvar.GeneName.isin(clinvar_partners_df.GeneName)].to_dict(orient='records')
 
@@ -529,26 +586,49 @@ def Transcript():
 def Disease():
 
     SampleDiseaseType = request.args.get('disease')
+    # mouse diseases
+    if (SampleDiseaseType == 'OIH_NAc' or SampleDiseaseType == 'OIH_TG'):
+        cur = mysql.get_db().cursor()
+        sql = ''' SELECT Tissue, GeneName1, RNAseqAliquotID, cMDT, cMDTenrichment, mart_export_mouse.Transcript_Name FROM interactionDisruptionInDominantTranscripts_Mouse
+        LEFT JOIN mart_export_mouse ON interactionDisruptionInDominantTranscripts_Mouse.cMDT = mart_export_mouse.ENSMUST
+        WHERE interactionDisruptionInDominantTranscripts_Mouse.Tissue = %s '''
+        adr = (SampleDiseaseType, )
+        cur.execute(sql, adr)
+        isonet_tuple = cur.fetchall()
+        df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'GeneName1', 'RNAseqAliquotID', 'cMDT',  'dMDTenrichment', 'Transcript_Name'])
+        df_iso2 = df.drop_duplicates()
+        df_iso2 = df_iso2[['Tissue', 'GeneName1', 'RNAseqAliquotID', 'cMDT', 'Transcript_Name', 'dMDTenrichment']]
+        temp_dict = df_iso2.to_dict(orient='records')
 
-    cur = mysql.get_db().cursor()
-    sql = ''' SELECT Tissue, GeneName1, RNAseqAliquotID, cMDT, mart_export_mouse.Transcript_Name FROM interactionDisruptionInDominantTranscripts_int_anno_OIH
-    LEFT JOIN mart_export_mouse ON interactionDisruptionInDominantTranscripts_int_anno_OIH.cMDT = mart_export_mouse.ENSMUST
-    WHERE interactionDisruptionInDominantTranscripts_int_anno_OIH.Tissue = %s '''
-    adr = (SampleDiseaseType, )
-    cur.execute(sql, adr)
-    isonet_tuple = cur.fetchall()
-    df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'GeneName1', 'RNAseqAliquotID', 'cMDT', 'Transcript_Name'])
-    df_iso2 = df.drop_duplicates()
-    temp_dict = df_iso2.to_dict(orient='records')
+        ## second table in the page representing second graph - MDT counts per sample
+        cur2 = mysql.get_db().cursor()
+        sql2 = '''SELECT Tissue, SampleID, Count FROM sample_mdt_counts WHERE Tissue = %s '''
+        adr2 = (SampleDiseaseType, )
+        cur2.execute(sql2, adr2)
+        dataset_muts = cur2.fetchall()
+        muts_df = pd.DataFrame(dataset_muts, columns= ['Tissue', 'SampleID', 'Count' ])
+        dataset = muts_df.to_dict(orient='records')
+    else:
+        cur = mysql.get_db().cursor()
+        sql = ''' SELECT Tissue, GeneName1, RNAseqAliquotID, cMDT, cMDTenrichment, mart_export.`Associated Transcript Name` FROM interactionDisruptionInDominantTranscripts_Human_Disease
+        LEFT JOIN mart_export ON interactionDisruptionInDominantTranscripts_Human_Disease.cMDT = mart_export.`Ensembl Transcript ID`
+        WHERE interactionDisruptionInDominantTranscripts_Human_Disease.Tissue = %s '''
+        adr = (SampleDiseaseType, )
+        cur.execute(sql, adr)
+        isonet_tuple = cur.fetchall()
+        df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'GeneName1', 'RNAseqAliquotID', 'cMDT', 'dMDTenrichment', 'Transcript_Name'])
+        df_iso2 = df.drop_duplicates()
+        df_iso2 = df_iso2[['Tissue', 'GeneName1', 'RNAseqAliquotID', 'cMDT', 'Transcript_Name', 'dMDTenrichment']]
+        temp_dict = df_iso2.to_dict(orient='records')
 
-    ## second table in the page representing second graph - MDT counts per sample
-    cur2 = mysql.get_db().cursor()
-    sql2 = '''SELECT Tissue, SampleID, Count FROM sample_mdt_counts WHERE Tissue = %s '''
-    adr2 = (SampleDiseaseType, )
-    cur2.execute(sql2, adr2)
-    dataset_muts = cur2.fetchall()
-    muts_df = pd.DataFrame(dataset_muts, columns= ['Tissue', 'SampleID', 'Count' ])
-    dataset = muts_df.to_dict(orient='records')
+        ## second table in the page representing second graph - MDT counts per sample
+        cur2 = mysql.get_db().cursor()
+        sql2 = '''SELECT Tissue, SampleID, Count FROM sample_mdt_counts WHERE Tissue = %s '''
+        adr2 = (SampleDiseaseType, )
+        cur2.execute(sql2, adr2)
+        dataset_muts = cur2.fetchall()
+        muts_df = pd.DataFrame(dataset_muts, columns= ['Tissue', 'SampleID', 'Count' ])
+        dataset = muts_df.to_dict(orient='records')
 
     return render_template("Disease_Based.html", SampleDiseaseType = SampleDiseaseType, data = temp_dict, data2 = dataset)
 
@@ -556,13 +636,24 @@ def DiseaseSpecific(SampleDiseaseType):
 
     SampleDiseaseType = request.args.get('disease')
 
-    cur = mysql.get_db().cursor()
-    sql = ''' SELECT cMDT, Frequency, Tissue, mart_export_mouse.Transcript_Name FROM dMDT_Frequency LEFT JOIN mart_export_mouse ON dMDT_Frequency.cMDT = mart_export_mouse.ENSMUST
+    if (SampleDiseaseType == 'OIH_NAc'or SampleDiseaseType == 'OIH_TG') :
+        cur = mysql.get_db().cursor()
+        sql = ''' SELECT cMDT, Frequency, Tissue, mart_export_mouse.Transcript_Name FROM dMDT_Frequency LEFT JOIN mart_export_mouse ON dMDT_Frequency.cMDT = mart_export_mouse.ENSMUST
+                WHERE dMDT_Frequency.Tissue = %s ORDER BY Frequency DESC LIMIT 10 '''
+        adr = (SampleDiseaseType, )
+        cur.execute(sql,adr)
+        TableS4_tuple = cur.fetchall()
+        result = pd.DataFrame(TableS4_tuple, columns=['cMDT','Frequency','Tissue', 'Transcript_Name'])
+
+    else:
+        cur = mysql.get_db().cursor()
+        sql = ''' SELECT cMDT, Frequency, Tissue, mart_export.`Associated Transcript Name` FROM dMDT_Frequency LEFT JOIN mart_export ON dMDT_Frequency.cMDT = mart_export.`Ensembl Transcript ID`
             WHERE dMDT_Frequency.Tissue = %s ORDER BY Frequency DESC LIMIT 10 '''
-    adr = (SampleDiseaseType, )
-    cur.execute(sql,adr)
-    TableS4_tuple = cur.fetchall()
-    result = pd.DataFrame(TableS4_tuple, columns=['cMDT','Frequency','Tissue', 'Transcript_Name'])
+        adr = (SampleDiseaseType, )
+        cur.execute(sql,adr)
+        TableS4_tuple = cur.fetchall()
+        result = pd.DataFrame(TableS4_tuple, columns=['cMDT','Frequency','Tissue', 'Transcript_Name'])
+
 
     result['Frequency'] = result['Frequency'].replace(np.nan, 0)
     result['Frequency'] = pd.to_numeric(result["Frequency"])
@@ -575,14 +666,46 @@ def DiseaseSpecific(SampleDiseaseType):
     cMDT_dist = pd.DataFrame(cMDT_mdts_muts, columns=['Tissue', 'SampleID','Count'])
     cMDT_dist['Count'] = pd.to_numeric(cMDT_dist["Count"])
 
-    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 dMDT", "Number of dMDTs"))
+
+
+    # extract dMDT TPMs values from pcawg data - Top 10 dMDT
+    enst_list = result['cMDT'].values.tolist()
+    tissue = request.args.get('disease')
+    pcawg = '_pcawg'
+
+    enst_tpms = mysql.get_db().cursor()
+    my_tissue2 = tissue + pcawg
+    result_enst_tpms = pd.DataFrame()
+    for eachdMDT in enst_list:
+        enst_tpms_sql = ''' SELECT * FROM `''' + my_tissue2 + '''` WHERE Feature REGEXP %s '''
+        enst_tpms_adr = (eachdMDT,)
+        enst_tpms.execute(enst_tpms_sql, enst_tpms_adr)
+        enst_tpms_tuple = enst_tpms.fetchall()
+        result_enst_tpms_df = pd.DataFrame(enst_tpms_tuple)
+        result_enst_tpms = result_enst_tpms.append(result_enst_tpms_df, ignore_index = True)
+
+    medians_each_row_list = []
+    result_enst_tpms_TPMs = result_enst_tpms.iloc[:,1:]
+
+    medians_each_row = result_enst_tpms_TPMs.median(axis=1)
+
+    medians_each_row_list = medians_each_row.values.tolist()
+    medians_rounds = [round(number, 2) for number in medians_each_row_list]
+    medians_rounds_text = ["Median TPM: " + str(item) for item in medians_rounds]
+
+    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 dMDT [The values on barplots show the median TPM values of transcripts]", "Number of dMDTs"))
+
+
 
 
     trace1 = go.Bar(
-                name = '% of ENSTs across ' + SampleDiseaseType,
+                name = '% of Transcripts across ' + SampleDiseaseType,
                 marker_color = 'indianred',
                 x=result.iloc[:,3],
-                y=result.iloc[:,1]*100
+                y=result.iloc[:,1]*100,
+                text = medians_rounds,
+                hovertext = medians_rounds_text,
+                textposition='inside'
             )
 
     trace2 = go.Box(y=cMDT_dist.Count, boxpoints='outliers',jitter=0.3,
@@ -625,15 +748,34 @@ def Gene():
         clinvar_dict = clinvar.to_dict(orient='records')
 
         cur5 = mysql.get_db().cursor()
+        cur_disease = mysql.get_db().cursor()
+
+
         sql5 = ''' SELECT Tissue, ENSG, NumberOfGtexMDIs, GeneName1, GeneName2, TotalNumberOfStringInt, NumberOfUniqMissedInteractionsOfDomCancerTrans, Pfam1, Domain1, Pfam2, Domain2, CancerSampleId, DomCancerTrans, StringDensityRank1, Region1, mart_export.`Associated Transcript Name` FROM interactionDisruptionInDominantTranscripts_int_anno_Human
         LEFT JOIN mart_export ON interactionDisruptionInDominantTranscripts_int_anno_Human.DomCancerTrans = mart_export.`Ensembl Transcript ID`
         WHERE interactionDisruptionInDominantTranscripts_int_anno_Human.GeneName1 = %s '''
+
+        sql_disease = ''' SELECT Tissue, ENSG, NumberOfGTExMDT, GeneName1, GeneName2, TotalNumberOfStringInt, cMDTnumberOfUniqMissedInt, Pfam1, Domain1, Pfam2, Domain2, RNAseqAliquotID, cMDT, StringDensityRank1, Region1, mart_export.`Associated Transcript Name` FROM interactionDisruptionInDominantTranscripts_Human_Disease
+        LEFT JOIN mart_export ON interactionDisruptionInDominantTranscripts_Human_Disease.cMDT = mart_export.`Ensembl Transcript ID`
+        WHERE interactionDisruptionInDominantTranscripts_Human_Disease.GeneName1 = %s '''
+
         adr5 = (genename,)
+
         cur5.execute(sql5, adr5)
         isonet_tuple = cur5.fetchall()
-        df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'ENSG', 'NumberOfGtexMDIs', 'GeneName1', 'GeneName2', 'TotalNumberOfStringInt', 'NumberOfUniqMissedInteractionsOfDomCancerTrans', 'Pfam1', 'Domain1', 'Pfam2', 'Domain2', 'CancerSampleId', 'DomCancerTrans', 'StringDensityRank1', 'Region1', 'Transcript_Name'])
-        df =  df.rename(columns={'ENSG': 'ENSGid', 'TotalNumberOfStringInt': 'NumberOfStringInt','NumberOfUniqMissedInteractionsOfDomCancerTrans': 'MissedInteractions'})
-        df[['Splitted','CancerType2']] = df.Tissue.str.split('.', expand=True)
+
+        cur_disease.execute(sql_disease, adr5)
+        isonet_tuple_disease = cur_disease.fetchall()
+
+        df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'ENSG', 'NumberOfGtexMDIs', 'GeneName1', 'GeneName2', 'TotalNumberOfStringInt', 'cMDTnumberOfUniqMissedInt', 'Pfam1', 'Domain1', 'Pfam2', 'Domain2', 'CancerSampleId', 'DomCancerTrans', 'StringDensityRank1', 'Region1', 'Transcript_Name'])
+        df =  df.rename(columns={'Tissue': 'CancerType2', 'ENSG': 'ENSGid', 'TotalNumberOfStringInt': 'NumberOfStringInt','cMDTnumberOfUniqMissedInt': 'MissedInteractions'})
+
+        df_disease = pd.DataFrame(isonet_tuple_disease, columns=['Tissue', 'ENSG', 'NumberOfGtexMDIs', 'GeneName1', 'GeneName2', 'TotalNumberOfStringInt', 'cMDTnumberOfUniqMissedInt', 'Pfam1', 'Domain1', 'Pfam2', 'Domain2', 'CancerSampleId', 'DomCancerTrans', 'StringDensityRank1', 'Region1', 'Transcript_Name'])
+        df_disease =  df_disease.rename(columns={'Tissue': 'CancerType2', 'ENSG': 'ENSGid', 'TotalNumberOfStringInt': 'NumberOfStringInt','cMDTnumberOfUniqMissedInt': 'MissedInteractions'})
+
+        df = pd.concat([df, df_disease])
+
+        #df[['Splitted','CancerType2']] = df.Tissue.str.split('.', expand=True)
         df = df.drop_duplicates()
 
         df['Domain1'].replace({"-":"None"},inplace=True)
@@ -648,12 +790,13 @@ def Gene():
         data_dict = df.to_dict(orient='records')
 
         string_score = statistic_table.iloc[0,6]
-        string_score = float("{:.2f}".format(string_score))*100
+        string_score = int(statistic_table.iloc[0,6]*100)
+        #string_score = float("{:.2f}".format(string_score))*100
         ### DRAW PIE CHART
 
         data = make_subplots(rows=1, cols=1, specs=[[{'type':'domain'}]])
 
-        data.add_trace(go.Pie(labels=df.Tissue, title="Cancer Types"), 1, 1)
+        data.add_trace(go.Pie(labels=df.CancerType2, title="Disease Types"), 1, 1)
         data.update_traces(selector=dict(type='pie'), textinfo='label+text',hoverinfo='label+percent',
                                   marker=dict(line=dict(color='#000000', width=4)))
 
@@ -734,9 +877,9 @@ def Gene():
         clinvar_dict = clinvar.to_dict(orient='records')
 
         cur5 = mysql.get_db().cursor()
-        sql5 = ''' SELECT Tissue, ENSG, NumberOfGTExMDT, GeneName1, GeneName2, TotalNumberOfStringInt, cMDTnumberOfUniqMissedInt, Pfam1, Domain1, Pfam2, Domain2, RNAseqAliquotID, cMDT, StringDensityRank1, Region1, mart_export_mouse.Transcript_Name FROM interactionDisruptionInDominantTranscripts_int_anno_OIH
-        LEFT JOIN mart_export_mouse ON interactionDisruptionInDominantTranscripts_int_anno_OIH.cMDT = mart_export_mouse.ENSMUST
-        WHERE interactionDisruptionInDominantTranscripts_int_anno_OIH.GeneName1 = %s '''
+        sql5 = ''' SELECT Tissue, ENSG, NumberOfGTExMDT, GeneName1, GeneName2, TotalNumberOfStringInt, cMDTnumberOfUniqMissedInt, Pfam1, Domain1, Pfam2, Domain2, RNAseqAliquotID, cMDT, StringDensityRank1, Region1, mart_export_mouse.Transcript_Name FROM interactionDisruptionInDominantTranscripts_Mouse
+        LEFT JOIN mart_export_mouse ON interactionDisruptionInDominantTranscripts_Mouse.cMDT = mart_export_mouse.ENSMUST
+        WHERE interactionDisruptionInDominantTranscripts_Mouse.GeneName1 = %s '''
         adr5 = (genename,)
         cur5.execute(sql5, adr5)
         isonet_tuple = cur5.fetchall()
@@ -754,7 +897,8 @@ def Gene():
         data_dict = df.to_dict(orient='records')
 
         string_score = statistic_table.iloc[0,6]
-        string_score = float("{:.2f}".format(string_score))*100
+        string_score = int(statistic_table.iloc[0,6]*100)
+        #string_score = float("{:.2f}".format(string_score))*100
         ### DRAW PIE CHART
 
         data = make_subplots(rows=1, cols=1, specs=[[{'type':'domain'}]])
@@ -842,9 +986,18 @@ def Sample():
     genename = request.args.get('gene')
     tissue = request.args.get('tissue')
 
-    if tissue == 'OIH':
+    if (tissue == 'OIH_NAc' or tissue == 'OIH_TG'):
         cur = mysql.get_db().cursor()
-        sql = ''' SELECT Tissue, ENSG, GeneName1, RNAseqAliquotID, cMDT, GTExMDT FROM interactionDisruptionInDominantTranscripts_int_anno_OIH WHERE RNAseqAliquotID = %s '''
+        sql = ''' SELECT Tissue, ENSG, GeneName1, RNAseqAliquotID, cMDT, GTExMDT FROM interactionDisruptionInDominantTranscripts_Mouse WHERE RNAseqAliquotID = %s '''
+        adr = (CancerSampleId, )
+        cur.execute(sql, adr)
+        isonet_tuple = cur.fetchall()
+        df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'ENSG', 'GeneName1', 'CancerSampleId', 'DomCancerTrans', 'GTExMDIs'])
+
+
+    elif (tissue == "Alzheimer's disease" or tissue == "Parkinson's disease" or tissue == "Behcet's disease"):
+        cur = mysql.get_db().cursor()
+        sql = ''' SELECT Tissue, ENSG, GeneName1, RNAseqAliquotID, cMDT, GTExMDT FROM interactionDisruptionInDominantTranscripts_Human_Disease WHERE RNAseqAliquotID = %s '''
         adr = (CancerSampleId, )
         cur.execute(sql, adr)
         isonet_tuple = cur.fetchall()
@@ -888,15 +1041,22 @@ def update_fig(CancerSampleId, genename, tissue):
     tissue = request.args.get('tissuetype')
     CancerSampleId = request.args.get('CanSampleId')
 
-    if tissue == 'OIH':
+    if (tissue == 'OIH_NAc' or tissue == 'OIH_TG'):
         cur = mysql.get_db().cursor()
-        sql = ''' SELECT Tissue, ENSG, GeneName1, RNAseqAliquotID, cMDT, GTExMDT FROM interactionDisruptionInDominantTranscripts_int_anno_OIH WHERE RNAseqAliquotID = %s '''
+        sql = ''' SELECT Tissue, ENSG, GeneName1, RNAseqAliquotID, cMDT, GTExMDT FROM interactionDisruptionInDominantTranscripts_Mouse WHERE RNAseqAliquotID = %s '''
         adr = (CancerSampleId, )
         cur.execute(sql, adr)
         isonet_tuple = cur.fetchall()
         df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'ENSG', 'GeneName1', 'CancerSampleId', 'DomCancerTrans', 'GTExMDIs'])
         tissuetype = tissue
-
+    elif (tissue == "Alzheimer's disease" or tissue == "Parkinson's disease" or tissue == "Behcet's disease"):
+        cur = mysql.get_db().cursor()
+        sql = ''' SELECT Tissue, ENSG, GeneName1, RNAseqAliquotID, cMDT, GTExMDT FROM interactionDisruptionInDominantTranscripts_Human_Disease WHERE RNAseqAliquotID = %s '''
+        adr = (CancerSampleId, )
+        cur.execute(sql, adr)
+        isonet_tuple = cur.fetchall()
+        df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'ENSG', 'GeneName1', 'CancerSampleId', 'DomCancerTrans', 'GTExMDIs'])
+        tissuetype = tissue
     else:
         cur = mysql.get_db().cursor()
         sql = ''' SELECT Tissue, ENSG, GeneName1, CancerSampleId, DomCancerTrans, GTExMDIs FROM interactionDisruptionInDominantTranscripts_int_anno_Human WHERE CancerSampleId = %s '''
@@ -931,7 +1091,7 @@ def update_fig(CancerSampleId, genename, tissue):
     df_gtex_normal = pd.DataFrame()
     for eachtranscript in normal_trans_id_list:
 
-        gtex_sql_normal = '''SELECT * FROM ''' + my_tissue + ''' WHERE Feature REGEXP %s'''
+        gtex_sql_normal = '''SELECT * FROM `''' + my_tissue + '''`WHERE Feature REGEXP %s'''
         gtex_adr_normal = (eachtranscript,)
         gtex_cur_normal.execute(gtex_sql_normal, gtex_adr_normal)
         df_gtex_tuple = gtex_cur_normal.fetchall()
@@ -941,7 +1101,7 @@ def update_fig(CancerSampleId, genename, tissue):
     # extract cancer transcript expression from gtex data - only 1 transcript
 
     gtex_cur_cancer = mysql.get_db().cursor()
-    gtex_sql_cancer = ''' SELECT * FROM ''' + my_tissue + ''' WHERE Feature REGEXP %s '''
+    gtex_sql_cancer = ''' SELECT * FROM `''' + my_tissue + '''` WHERE Feature REGEXP %s '''
     gtex_adr_cancer = (cancer_trans_id,)
     gtex_cur_cancer.execute(gtex_sql_cancer, gtex_adr_cancer)
     df_gtex_tuple_2 = gtex_cur_cancer.fetchall()
@@ -956,7 +1116,7 @@ def update_fig(CancerSampleId, genename, tissue):
     pcawg_cur_normal = mysql.get_db().cursor()
     df_pcawg_normal = pd.DataFrame()
     for eachtranscript in normal_trans_id_list:
-        pcawg_sql_normal = ''' SELECT Feature, ''' +  '''`''' + CancerSampleId + '''`'''  + ''' FROM ''' + my_tissue2 + ''' WHERE Feature REGEXP %s '''
+        pcawg_sql_normal = ''' SELECT Feature, ''' +  '''`''' + CancerSampleId + '''`'''  + ''' FROM `''' + my_tissue2 + '''` WHERE Feature REGEXP %s '''
         pcawg_adr_normal = (eachtranscript,)
         pcawg_cur_normal.execute(pcawg_sql_normal, pcawg_adr_normal)
         df_pcawg_tuple = pcawg_cur_normal.fetchall()
@@ -965,7 +1125,7 @@ def update_fig(CancerSampleId, genename, tissue):
 
     # extract cancer transcript expression from pcawg data - only 1 transcript
     pcawg_cur_cancer = mysql.get_db().cursor()
-    pcawg_sql_cancer = ''' SELECT Feature, ''' +  '''`''' + CancerSampleId + '''`'''  + ''' FROM ''' + my_tissue2 + ''' WHERE Feature REGEXP %s '''
+    pcawg_sql_cancer = ''' SELECT Feature, ''' +  '''`''' + CancerSampleId + '''`'''  + ''' FROM `''' + my_tissue2 + '''` WHERE Feature REGEXP %s '''
     pcawg_adr_cancer = (cancer_trans_id,)
     pcawg_cur_cancer.execute(pcawg_sql_cancer, pcawg_adr_cancer)
     df_pcawg_tuple_2 = pcawg_cur_cancer.fetchall()

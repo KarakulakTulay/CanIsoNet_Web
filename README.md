@@ -1,11 +1,14 @@
 # CanIsoNet
 <img src="https://github.com/KarakulakTulay/CanIsoNet_Web/blob/master/static/images/logo.png" width="100">
-We have recently analyzed the pathogenic impact of isoform switching events in 1209 cancer samples covering 27 different cancer types and one publicly available mouse RNA-Seq datasets on OIH. Expanding on those results, we have built a user-friendly Disease Specific Isoform Interaction Network (CanIsoNet) database to make our results more accessible to the research community.
+
+We have recently analyzed the pathogenic impact of isoform switching events in 31 disease types covering 27 different cancer types from PCAWG project, and four publicly available RNA-Seq datasets on OIH, Alzheimer's Disease, Parkinson's Disease and Behcet's Disease. Expanding on those results, we have built a user-friendly Disease Specific Isoform Interaction Network (CanIsoNet) database to make our results more accessible to the research community.
 CanIsoNet is the first webserver that merges isoform switching events in different disease types with their functional impact level and showing them on STRING interaction network.
-It holds annotations for 11,072 isoforms and 13,531 unique isoform switching events across 28 diseases.
-CanIsoNet provides two main functionalities to the users: <br>
+It holds annotations for 11,528 isoforms and 14,357 unique isoform switching events across 31 diseases.
+CanIsoNet provides followings to the users: <br>
 1) Browsing various statistics on disease-specific isoform switching events in each diseases.<br>
 2) Exploring and visualizing network disruptions in the STRING interaction network.<br>
+3) Exploring the disease-type specific dMDTs. <br>
+4) Exploring the isoform switching event in each sample with their expression values. <br>
 
 ## Availability
 

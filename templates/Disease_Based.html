@@ -52,7 +52,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header text-white" style="background-color: #757575;">
-                        <i class="fas fa-chart-bar mr-1"></i> Top 10 dMDT and Number of dMDTs in each samples
+                        <i class="fas fa-chart-bar mr-1"></i> Most frequent dMDT and number of dMDT
 
                     </div>
                     <div class="card-body">
@@ -74,7 +74,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header text-white" style="background-color: #757575;">
-                        <i class="fas fa-table mr-1"></i> Transcripts found as dMDT in the Disease
+                        <i class="fas fa-table mr-1"></i> List of dMDT
                     </div>
                     <div class="table-responsive">
 
@@ -92,7 +92,7 @@
                                     <th data-sortable="true">Gene Name</th>
                                     <th data-sortable="true">dMDT</th>
                                     <th data-sortable="true">Transcript Name</th>
-                                   <!-- <th data-sortable="true">Abundance of dMDT (TPM)</th> -->
+                                    <th data-sortable="true">Relative Expression</th>
                                 </tr>
                             </thead>
                             {% for value in data %}
@@ -103,14 +103,14 @@
                                   <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Mouse" target="_blank">{{ value['GeneName1'] }}</a></td>
                                   <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Mouse" target="_blank">{{ value['cMDT'] }}</a></td>
                                   <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Mouse" target="_blank">{{ value['Transcript_Name'] }}</a></td>
-                                 <!-- <td>{{ value['dMDTenrichment'] }}</a></td> -->
+                                  <td>{{ value['dMDTenrichment'] }}</a></td>
                               {% else %}
                                   <td><a href="Disease?disease={{ value['Tissue']}}" target="_blank">{{ value['Tissue']}}</a></td>
                                   <td><a href="Sample?tissue={{ value['Tissue']}}&gene={{ value['GeneName1']}}&sampleid={{ value['RNAseqAliquotID']}}" target="_blank">{{ value['RNAseqAliquotID']}}</a></td>
                                   <td><a href="Gene?gene={{ value['GeneName1'] }}&organism=Human" target="_blank">{{ value['GeneName1'] }}</a></td>
                                   <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Human" target="_blank">{{ value['cMDT'] }}</a></td>
                                   <td><a href="Transcript?gene={{ value['GeneName1'] }}&enst={{ value['cMDT'] }}&organism=Human" target="_blank">{{ value['Transcript_Name'] }}</a></td>
-                                 <!-- <td>{{ value['dMDTenrichment'] }}</a></td> -->
+                                  <td>{{ value['dMDTenrichment'] }}</td>
                             {% endif %}
                             </tr>
                             {% endfor %}
@@ -125,7 +125,7 @@
             <div class="col-xl-12">
                 <div class="card mb-4">
                     <div class="card-header text-white" style="background-color: #757575;">
-                        <i class="fas fa-table mr-1"></i> Number of detected dMDTs in each sample
+                        <i class="fas fa-table mr-1"></i> Number of detected dMDT per sample
                     </div>
                     <div class="table-responsive">
                     <div id="toolbar2" class="select">
@@ -139,7 +139,7 @@
                                 <tr>
                                     <th data-sortable="true">Disease</th>
                                     <th data-sortable="true">Sample ID</th>
-                                    <th data-sortable="true">Number Of MDTs</th>
+                                    <th data-sortable="true">Frequency</th>
                                 </tr>
                             </thead>
                             {% for value in data2 %}
@@ -194,8 +194,8 @@
                     field: 'Sample ID',
                     title: 'Sample ID'
                   }, {
-                    field: 'Number Of MDTs',
-                    title: 'Number Of MDTs'
+                    field: 'Frequency',
+                    title: 'Frequency'
                   }
                 ]
               })

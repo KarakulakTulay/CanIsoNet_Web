@@ -35,27 +35,28 @@
     <div class="container">
       <br>
       <div class="jumbotron">
-      <br>
-      <br>
             <div class="col-xl-12">
                 <div class="content">
                   <div align="center" width="700px">
                   <h2 class= "featurette-heading">
                      CanIsoNet: <span class = "text-muted"> Disease-specific Isoform Interaction Network </span>
-                     <h6> CanIsoNet serves as a gateway to understand the functional role of disease-specific isoform switching events.
+                     <h6> CanIsoNet serves as a gateway to understand the functional role of disease-specific isoform switching events. We provide two main functionalities for the users:
+                     <br>
+                       1. Browsing various statistics on disease-specific isoform switching events
+                      <br>
+                       2. Exploring and visualising isoform-specific network disruptions in the STRING interaction network </h6>
                     </div>
                 </div>
             </div>
         </div>
             <div class="row">
             <div class="col-xl-12">
-            <b><p> This table shows the frequency of disease-type specific dMDTs which corresponding to transcripts found as dMDTs only in one disease type in CanIsoNet and not in the others.</p></b>
+            <b><p> This table shows the frequency of dMDT that are unique to a disease in CanIsoNet.</p></b>
                     <br>
-                    <p> Please note that comparisons are based on the data in CanIsoNet. </p>
             <div class="card mb-4">
                 <div class="table-responsive">
                     <div  class="card-header text-white" style="background-color: #757575;">
-                        <i class="fas fa-table mr-1"></i> Browse Disease Types
+                        <i class="fas fa-table mr-1"></i> List of disease-type-specific MDT
                     </div>
                 <div id="toolbar" class="select">
                   <select class="form-control">
@@ -63,7 +64,7 @@
                     <option value="all">Export All</option>
                   </select>
                 </div>
-               <table id="dataTable" data-show-export="true" data-click-to-select="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" data-search="true" data-height="600" data-show-export="true" data-page-size="10" data-pagination="true" data-show-multi-sort="true" data-total-rows="50">
+               <table id="dataTable" data-click-to-select="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" data-search="true" data-query-params="queryParams" data-side-pagination="server" data-height="600" data-show-export="true" data-page-size="10" data-pagination="true" data-show-multi-sort="true">
                    <thead class="thead-light">
                        <tr>
                            <th data-sortable="true">Disease Type</th>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+
+    <meta charset="utf-8">
+    <title> CanIsoNet </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMXDYWMED4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){window.dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-XMXDYWMED4');
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
+    <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/multiple-sort/bootstrap-table-multiple-sort.js"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/amblem.png') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.js"></script>
+    <link href='https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+</head>
+</html>
+
+<body>
+    {% extends "template.html" %} {% block content %}
+    <div class="container">
+      <br>
+      <div class="jumbotron">
+            <div class="col-xl-12">
+                <div class="content">
+                  <div align="center" width="700px">
+                  <h2 class= "featurette-heading">
+                     CanIsoNet: <span class = "text-muted"> Disease-specific Isoform Interaction Network </span>
+                     <h6> CanIsoNet serves as a gateway to understand the functional role of disease-specific isoform switching events. We provide two main functionalities for the users:
+                     <br>
+                       1. Browsing various statistics on disease-specific isoform switching events
+                      <br>
+                       2. Exploring and visualising isoform-specific network disruptions in the STRING interaction network </h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="row">
+            <div class="col-xl-12">
+            <b><p> This table shows the percentange of interaction lost for each dMDT in CanIsoNet as a result of indicated pfam domain lost.</p></b>
+                    <br>
+            <div class="card mb-4">
+                <div class="table-responsive">
+                    <div  class="card-header text-white" style="background-color: #757575;">
+                        <i class="fas fa-table mr-1"></i> List of Lost Domains in dMDT
+                    </div>
+                   <table id="dataTable2" data-toggle="table" data-click-to-select="true" data-show-multi-sort="true" >
+                       <ul>
+                         <li>
+                            <a href="https://github.com/KarakulakTulay/CanIsoNet_Web/blob/master/static/datasets/interactionsInIsoforms.tsv.gz?raw=true"> Download All </a>
+                        </li>
+                       </ul>
+                     <thead class="thead-light">
+                         <tr>
+                             <th data-sortable="true">Disease Type</th>
+                             <th data-sortable="true">dMDT</th>
+                             <th data-sortable="true">GeneName</th>
+                             <th data-sortable="true">Lost Interaction</th>
+                             <th data-sortable="true">Lost Pfam</th>
+                          <th data-sortable="true">Lost Domain</th>
+
+                         </tr>
+                     </thead>
+                     {% for value in temp_dict2 %}
+                     <tr>
+                         <td><a href="Cancer?cancer={{ value['CancerType2']}}">{{ value['CancerType2']}}</a></td>
+                         <td><a href="Transcript?enst={{ value['DomCancerTrans']}}&organism=Human">{{ value['DomCancerTrans']}}</a></td>
+                         <td><a href="Gene?gene={{ value['GeneName1']}}&organism=Human">{{ value['GeneName1']}}</a></td>
+                         <td>{{ value['Percentage']}}</td>
+                         <td>{{ value['Pfam1']}}</td>
+                         <td>{{ value['Domain1']}}</td>
+                     </tr>
+                     {% endfor %}
+                 </table>
+                 {{ pagination.links }}
+               <div class="fixed-table-pagination" style>
+                   </div>
+                <div class="float-right pagination"></div>
+              </div>
+             </div>
+            </div>
+        <br>
+        <br>
+          <div class="row">
+            <div class="col-12">
+              <div class="jumbotron">
+                  <h5>   Citation: </h5>
+                  <h6>   If you use CanIsoNet, please cite the following articles :</h6>
+                  <h6> Karakulak et al., <a href="https://www.biorxiv.org/content/10.1101/2021.09.17.460795v1" target="_blank"> CanIsoNet: A Database to Study the Functional Impact of Isoform Switching Events in Cancer</a>, BioRxiv, 2021.
+                      <br>
+                      Kahraman et al.,
+                      <a href="https://doi.org/10.1038/s41598-020-71221-5" target="_blank">Pathogenic impact of transcript isoform switching in 1,209 cancer samples covering 27 cancer types using an isoform-specific interaction network</a>,
+                      Scientific Reports, 2020.
+                  </h6>
+                  <hr class="my-4">
+                  <h6>   If you have any inquires about CanIsoNet:</h6>
+                  <p>Please contact via tuelay.karakulak@usz.ch.</p>
+                  <hr class="my-4">
+                  <h6>   Follow us:</h6>
+                  <p><a href="https://www.sib.swiss/abdullah-kahraman-group" target="_blank">Group Page</a></p>
+              </div>
+            </div>
+        </div>
+    </div>
+        <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+        <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
+        <script>
+          var $table2 = $('#dataTable2')
+          $(function() {
+            $('#toolbar').find('select').change(function () {
+              $table2.bootstrapTable('destroy').bootstrapTable({
+                exportDataType: $(this).val(),
+                exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+                columns: [
+                  {
+                    field: 'CancerType2',
+                    title: 'Disease Type'
+                  }, {
+                    field: 'DomCancerTrans',
+                    title: 'dMDT'
+                  }, {
+                    field: 'GeneName1',
+                    title: 'Gene Name'
+                  }, {
+                    field: 'Percentage',
+                    title: 'Lost Interaction'
+                  }, {
+                    field: 'Pfam1',
+                    title: 'Lost Pfam'
+                  }, {
+                    field: 'Domain1',
+                    title: 'Lost Domain'
+                  }
+                ]
+              })
+            }).trigger('change')
+          })
+        </script>
+        {% endblock %}
+</body>

@@ -8,6 +8,8 @@ import json
 from flaskext.mysql import MySQL
 import statistics
 import yaml
+from flask_paginate import Pagination, get_page_parameter
+#from flask_paginate import get_page_parameter
 
 app = Flask(__name__)
 
@@ -56,6 +58,55 @@ def home():
 
     return render_template('home.html', data=cancertypes_dict,  data2=gene_list, data3=isoform_list, temp_dict_human=temp_dict_human, temp_dict_mouse=temp_dict_mouse, genenamecmdt_gene_tn=transcript_list)
 
+
+@app.route("/specificdMDTs", methods=['GET', 'POST'])
+def specificdMDTs():
+
+    cur2 = mysql.get_db().cursor()
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    row_to_display = 15
+    offset = (page - 1) * row_to_display
+
+
+
+    cur2.execute(''' SELECT DISTINCT Tissue, ENSG, GeneName1, TotalNumberOfStringInt, NumberOfUniqMissedInteractionsOfDomCancerTrans, Pfam1, Domain1,
+                     DomCancerTrans FROM interactionDisruptionInDominantTranscripts_int_anno_Human UNION SELECT DISTINCT Tissue, ENSG, GeneName1, TotalNumberOfStringInt, cMDTnumberOfUniqMissedInt, Pfam1, Domain1,
+                     cMDT  FROM interactionDisruptionInDominantTranscripts_Human_Disease ORDER BY Tissue ASC LIMIT %s, %s''' , (offset, row_to_display))
+
+    total=2034*15
+
+    isonet_tuple = cur2.fetchall()
+
+    df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'ENSG', 'GeneName1',
+                                            'TotalNumberOfStringInt', 'NumberOfUniqMissedInteractionsOfDomCancerTrans',
+                                            'Pfam1', 'Domain1', 'DomCancerTrans'])
+
+
+    df = df.rename(columns={'ENSG': 'ENSGid', 'NumberOfUniqMissedInteractionsOfDomCancerTrans': 'MissedInteractions','TotalNumberOfStringInt': 'NumberOfStringInt'})
+    df = df.drop_duplicates()
+    df['Domain1'].replace({"-":"None"},inplace=True)
+    df = df.rename(columns={'Tissue':'CancerType2'})
+    df['Pfam1'].replace({"-":"None"},inplace=True)
+    df['MissedInteractions'].replace({-1:0},inplace=True)
+    df['NumberOfStringInt'].replace({-1:0},inplace=True)
+    #df['NumberOfStringInt'].replace({0:1},inplace=True)
+
+    df['Percentage'] = df['MissedInteractions'].divide(df['NumberOfStringInt'])*100
+    df['Percentage'].replace(np.nan, 0, inplace=True)
+    df['Percentage'].replace(-0, 0, inplace=True)
+    df['Percentage'].replace(-np.nan, 0, inplace=True)
+    df.replace([np.inf, -np.inf] , 0, inplace=True)
+    df['Percentage'] = df['Percentage'].round(2)
+
+    df = df.drop_duplicates()
+
+    pagination = Pagination(page=page, per_page=row_to_display, total=total, record_name='df', bs_version=4)
+    data_dict = df.to_dict(orient='records')
+
+    return render_template('specificdMDTs.html', temp_dict2=data_dict, pagination=pagination)
+
+
+
 @app.route("/dtMDTs")
 def dtMDTs():
 
@@ -71,7 +122,6 @@ def dtMDTs():
     temp_dict = result2.to_dict(orient='record')
 
     return render_template('dtMDTs.html', temp_dict=temp_dict)
-
 
 @app.route("/download", methods=['GET', 'POST'])
 def download():
@@ -113,17 +163,17 @@ def Cancer():
     SampleCancerType = request.args.get('cancer')
 
     cur = mysql.get_db().cursor()
-    sql = ''' SELECT Tissue, GeneName1, CancerSampleId, DomCancerTrans, mart_export.`Associated Transcript Name` FROM interactionDisruptionInDominantTranscripts_int_anno_Human
+    sql = ''' SELECT Tissue, GeneName1, CancerSampleId, DomCancerTrans, RelMDIexpressionInCancer, mart_export.`Associated Transcript Name` FROM interactionDisruptionInDominantTranscripts_int_anno_Human
     LEFT JOIN mart_export ON interactionDisruptionInDominantTranscripts_int_anno_Human.DomCancerTrans = mart_export.`Ensembl Transcript ID`
     WHERE interactionDisruptionInDominantTranscripts_int_anno_Human.Tissue = %s '''
     adr = (SampleCancerType, )
     cur.execute(sql, adr)
     isonet_tuple = cur.fetchall()
-    df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'GeneName1', 'CancerSampleId', 'DomCancerTrans', 'Associated Transcript Name'])
+    df = pd.DataFrame(isonet_tuple, columns=['Tissue', 'GeneName1', 'CancerSampleId', 'DomCancerTrans', 'RelMDIexpressionInCancer', 'Associated Transcript Name'])
     df[['Splitted','CancerType2']] = df.Tissue.str.split('.', expand=True)
-    df_iso = df[['CancerType2', 'Tissue', 'CancerSampleId', 'GeneName1', 'DomCancerTrans', 'Associated Transcript Name']]
+    df_iso = df[['CancerType2', 'Tissue', 'CancerSampleId', 'GeneName1', 'DomCancerTrans', 'Associated Transcript Name', 'RelMDIexpressionInCancer']]
     df_iso2 = df_iso.drop_duplicates()
-    result =  df_iso2.rename(columns={'Associated Transcript Name':'Transcript_Name'})
+    result =  df_iso2.rename(columns={'Associated Transcript Name':'Transcript_Name', 'RelMDIexpressionInCancer': 'dMDTenrichment'})
     temp_dict = result.to_dict(orient='records')
 
     ## second table in the page representing second graph - number of MDTs in each sample
@@ -187,11 +237,11 @@ def CancerSpecific(SampleCancerType):
     medians_rounds = [round(number, 2) for number in medians_each_row_list]
     medians_rounds_text = ["Median TPM: " + str(item) for item in medians_rounds]
 
-    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 dMDT [The values on barplots show the median TPM values of transcripts]", "Number of dMDTs"))
+    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Frequency of top 10 dMDT with median TPM values", "Number of dMDT"))
 
 
     trace1 = go.Bar(
-                name = '% of ENSTs across ' + SampleCancerType,
+                #name = '% of ENSTs across ' + SampleCancerType,
                 marker_color = 'indianred',
                 x=result.iloc[:,3],
                 y=result.iloc[:,1]*100,
@@ -204,9 +254,9 @@ def CancerSpecific(SampleCancerType):
                     marker_color = '#00CC96', name=' ')
 
     plot.append_trace(trace1, row=1, col=1)
-    plot.update_yaxes(title_text="Occurence of Transcripts in Samples (%)", row=1, col=1)
+    plot.update_yaxes(title_text="Frequency of Transcripts in Samples (%)", row=1, col=1)
     plot.append_trace(trace2, row=1, col=2)
-    plot.update_yaxes(title_text="Distribiton of dMDTs Across Samples", row=1, col=2)
+    plot.update_yaxes(title_text="Distribiton of dMDT Across Samples", row=1, col=2)
     plot.update_xaxes(title_text=' ', row=1, col=2)
     plot.update_layout(showlegend=False)
 
@@ -307,8 +357,8 @@ def Transcript():
             string_score = statistic_table.iloc[0,6]
             string_score = int(statistic_table.iloc[0,6]*100)
 
-            TotalInt = list(df['NumberOfStringInt'].unique())[0]
-            LostInt = list(df['Sum'].unique())[0]
+            TotalInt = int(list(df['NumberOfStringInt'].unique())[0])
+            LostInt = int(list(df['Sum'].unique())[0])
 
             ### draw pie chart to show which cancers/diseases have this transcript as a MDT
             data = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}]],
@@ -465,8 +515,8 @@ def Transcript():
             statistic_table = df[['GeneName1', 'GeneName2', 'NumberOfStringInt', 'Sum', 'Domain1', 'Domain2', 'StringDensityRank1', 'Region1', 'DomCancerTrans']].drop_duplicates()
             statistics_table_dict = statistic_table.to_dict(orient='records')
 
-            TotalInt = list(df['NumberOfStringInt'].unique())[0]
-            LostInt = list(df['Sum'].unique())[0]
+            TotalInt = int(list(df['NumberOfStringInt'].unique())[0])
+            LostInt = int(list(df['Sum'].unique())[0])
 
             string_score = statistic_table.iloc[0,6]
             string_score = int(statistic_table.iloc[0,6]*100)
@@ -589,7 +639,7 @@ def Disease():
     # mouse diseases
     if (SampleDiseaseType == 'OIH_NAc' or SampleDiseaseType == 'OIH_TG'):
         cur = mysql.get_db().cursor()
-        sql = ''' SELECT Tissue, GeneName1, RNAseqAliquotID, cMDT, cMDTenrichment, mart_export_mouse.Transcript_Name FROM interactionDisruptionInDominantTranscripts_Mouse
+        sql = ''' SELECT Tissue, GeneName1, RNAseqAliquotID, cMDT, cMDTrelExpression, mart_export_mouse.Transcript_Name FROM interactionDisruptionInDominantTranscripts_Mouse
         LEFT JOIN mart_export_mouse ON interactionDisruptionInDominantTranscripts_Mouse.cMDT = mart_export_mouse.ENSMUST
         WHERE interactionDisruptionInDominantTranscripts_Mouse.Tissue = %s '''
         adr = (SampleDiseaseType, )
@@ -610,7 +660,7 @@ def Disease():
         dataset = muts_df.to_dict(orient='records')
     else:
         cur = mysql.get_db().cursor()
-        sql = ''' SELECT Tissue, GeneName1, RNAseqAliquotID, cMDT, cMDTenrichment, mart_export.`Associated Transcript Name` FROM interactionDisruptionInDominantTranscripts_Human_Disease
+        sql = ''' SELECT Tissue, GeneName1, RNAseqAliquotID, cMDT, cMDTrelExpression, mart_export.`Associated Transcript Name` FROM interactionDisruptionInDominantTranscripts_Human_Disease
         LEFT JOIN mart_export ON interactionDisruptionInDominantTranscripts_Human_Disease.cMDT = mart_export.`Ensembl Transcript ID`
         WHERE interactionDisruptionInDominantTranscripts_Human_Disease.Tissue = %s '''
         adr = (SampleDiseaseType, )
@@ -693,13 +743,13 @@ def DiseaseSpecific(SampleDiseaseType):
     medians_rounds = [round(number, 2) for number in medians_each_row_list]
     medians_rounds_text = ["Median TPM: " + str(item) for item in medians_rounds]
 
-    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Top 10 dMDT [The values on barplots show the median TPM values of transcripts]", "Number of dMDTs"))
+    plot = make_subplots(rows=1, cols=2, column_widths=[0.7, 0.3], subplot_titles=("Frequency of top 10 dMDT with median TPM values", "Number of dMDT"))
 
 
 
 
     trace1 = go.Bar(
-                name = '% of Transcripts across ' + SampleDiseaseType,
+                #name = '% of Transcripts across ' + SampleDiseaseType,
                 marker_color = 'indianred',
                 x=result.iloc[:,3],
                 y=result.iloc[:,1]*100,
@@ -713,8 +763,8 @@ def DiseaseSpecific(SampleDiseaseType):
 
 
     plot.append_trace(trace1, row=1, col=1)
-    plot.update_yaxes(title_text="Occurence of Transcripts in Samples (%)", row=1, col=1)
-    plot.update_yaxes(title_text="Distribiton of dMDTs Across Samples",row=1, col=2)
+    plot.update_yaxes(title_text="Frequency of Transcripts in Samples (%)", row=1, col=1)
+    plot.update_yaxes(title_text="Distribiton of dMDT Across Samples",row=1, col=2)
     plot.update_xaxes(title_text=' ', row=1, col=2)
     plot.append_trace(trace2, row=1, col=2)
     plot.update_layout(showlegend=False)
